@@ -1,3 +1,4 @@
+
 #include "SimCalorimetry/EcalSimAlgos/interface/EcalHitResponse.h" 
 #include "SimCalorimetry/CaloSimAlgos/interface/CaloVSimParameterMap.h"
 #include "SimCalorimetry/CaloSimAlgos/interface/CaloSimParameters.h"
@@ -17,7 +18,7 @@
 #include "CLHEP/Units/GlobalSystemOfUnits.h" 
 #include <iostream>
 
-
+#include "SimCalorimetry/EcalSimAlgos/interface/EBShape.h"
 
 EcalHitResponse::EcalHitResponse( const CaloVSimParameterMap* parameterMap ,
 				  const CaloVShape*           shape         ) :
@@ -183,6 +184,9 @@ EcalHitResponse::finalizeHits()
 void 
 EcalHitResponse::run( MixCollection<PCaloHit>& hits, CLHEP::HepRandomEngine* engine )
 {
+
+  
+
    blankOutUsedSamples() ;
 
    for( MixCollection<PCaloHit>::MixItr hitItr ( hits.begin() ) ;
@@ -201,10 +205,16 @@ EcalHitResponse::run( MixCollection<PCaloHit>& hits, CLHEP::HepRandomEngine* eng
 void
 EcalHitResponse::putAnalogSignal( const PCaloHit& hit, CLHEP::HepRandomEngine* engine )
 {
+
+    //const EBShape* sh=dynamic_cast<const EBShape*> (shape());
+    //EBShape* csh = const_cast<EBShape*>(sh);
+    //std::cout << " Cast result" << csh << std::endl;
+    //if (csh) csh->m_shape_print("newshape.txt");
+    
    const DetId detId ( hit.id() ) ;
 
    const CaloSimParameters* parameters ( params( detId ) ) ;
-
+   std::cout<< "Hit Energy" << hit.energy() << std::endl;
    const double signal ( analogSignalAmplitude( detId, hit.energy(), engine ) ) ;
 
    double time = hit.time();
@@ -217,19 +227,31 @@ EcalHitResponse::putAnalogSignal( const PCaloHit& hit, CLHEP::HepRandomEngine* e
 
    const double tzero = ( shape()->timeToRise()
 			  + parameters->timePhase() 
-			  - jitter 
-			  - BUNCHSPACE*( parameters->binOfMaximum()
+			  - jitter
+              //- BUNCHSPACE*( parameters->binOfMaximum()            
+			  - BUNCHSPACE/4*( parameters->binOfMaximum()
 					 - m_phaseShift             ) ) ;
    double binTime ( tzero ) ;
 
    EcalSamples& result ( *findSignal( detId ) ) ;
 
    const unsigned int rsize ( result.size() ) ;
+   EBDetId ebid(detId);
 
+
+   if (hit.energy() > 1.0){
+   std::cout << "putAnalogSignal : id " << ebid.denseIndex() << std::endl;
+   std::cout <<" putAnalogSignal: rsize " <<rsize<< std::endl; 
    for( unsigned int bin ( 0 ) ; bin != rsize ; ++bin )
    {
       result[ bin ] += (*shape())( binTime )*signal ;
-      binTime += BUNCHSPACE ;
+      std::cout << binTime<< " " << (*shape())( binTime ) << " " << signal<< std::endl;
+      binTime += BUNCHSPACE/4 ; // SA bovinamente ... funzionera' ?
+      //binTime += BUNCHSPACE;
+   }
+
+   
+   std::cout << "putAnalogSignal: done filling signal for id " << ebid.denseIndex() << std::endl;
    }
 }
 

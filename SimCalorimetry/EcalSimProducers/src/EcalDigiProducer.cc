@@ -40,7 +40,7 @@
 #include "CalibCalorimetry/EcalLaserCorrection/interface/EcalLaserDbRecord.h"
 #include "CondFormats/EcalObjects/interface/EcalADCToGeVConstant.h"
 #include "CondFormats/DataRecord/interface/EcalADCToGeVConstantRcd.h"
-#include "CondFormats/EcalObjects/interface/EcalGainRatios.h"
+#include "CondFormats/EcalObjects/interface/EcalGainRatio.h"
 #include "CondFormats/DataRecord/interface/EcalGainRatiosRcd.h"
 
 #include "CondFormats/ESObjects/interface/ESIntercalibConstants.h"
@@ -241,11 +241,7 @@ EcalDigiProducer::EcalDigiProducer( const edm::ParameterSet& params,  edm::Consu
    m_Coder.reset( new EcalCoder( addNoise         , 
                                  m_PreMix1        ,
                                  m_EBCorrNoise[0].get() ,
-                                 m_EECorrNoise[0].get() ,
-                                 m_EBCorrNoise[1].get() ,
-                                 m_EECorrNoise[1].get() ,
-                                 m_EBCorrNoise[2].get() ,
-                                 m_EECorrNoise[2].get()   ) );
+                                 m_EBCorrNoise[1].get()) );
 
    m_ElectronicsSim.reset( new EcalElectronicsSim( m_ParameterMap.get()    ,
                                                    m_Coder.get()           ,
@@ -257,11 +253,8 @@ EcalDigiProducer::EcalDigiProducer( const edm::ParameterSet& params,  edm::Consu
      m_APDCoder.reset( new EcalCoder( false            , 
                                       m_PreMix1        ,
                                       m_EBCorrNoise[0].get() ,
-                                      m_EECorrNoise[0].get() ,
-                                      m_EBCorrNoise[1].get() ,
-                                      m_EECorrNoise[1].get() ,
-                                      m_EBCorrNoise[2].get() ,
-                                      m_EECorrNoise[2].get()   ) );
+                                      m_EBCorrNoise[1].get() ));
+
      
      m_APDElectronicsSim.reset( new EcalElectronicsSim( m_ParameterMap.get()    ,
                                                         m_APDCoder.get()        ,
@@ -401,8 +394,13 @@ EcalDigiProducer::finalizeEvent(edm::Event& event, edm::EventSetup const& eventS
    // run the algorithm
 
    if( m_doEB ) {
+       std::cout << " EcalDigiProducer ::finalize, running digitizer "
+                 << event.run() <<  " " << event.id() << std::endl;
+       
      m_BarrelDigitizer->run( *barrelResult, randomEngine_ ) ;
      cacheEBDigis( &*barrelResult ) ;
+
+
      
      edm::LogInfo("DigiInfo") << "EB Digis: " << barrelResult->size() ;
      
@@ -504,19 +502,12 @@ EcalDigiProducer::checkCalibrations(const edm::Event& event, const edm::EventSet
    m_Coder->setGainRatios( gr );
    if( nullptr != m_APDCoder) m_APDCoder->setGainRatios( gr );
 
-   EcalMGPAGainRatio * defaultRatios = new EcalMGPAGainRatio();
+   
 
-   double theGains[m_Coder->NGAINS+1];
-   theGains[0] = 0.;
-   theGains[3] = 1.;
-   theGains[2] = defaultRatios->gain6Over1() ;
-   theGains[1] = theGains[2]*(defaultRatios->gain12Over6()) ;
+   double theGains[m_Coder->NGAINS];
+   theGains[0] = 10. ;
+   theGains[1] = 1.;
 
-   LogDebug("EcalDigi") << " Gains: " << "\n" << " g1 = " << theGains[1] 
-			<< "\n" << " g2 = " << theGains[2] 
-			<< "\n" << " g3 = " << theGains[3] ;
-
-   delete defaultRatios;
 
    const double EBscale (
       ( agc->getEBValue())*theGains[1]*(m_Coder->MAXADC)*m_EBs25notCont ) ;
