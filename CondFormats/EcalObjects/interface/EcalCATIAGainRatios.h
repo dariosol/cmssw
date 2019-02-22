@@ -5,6 +5,6 @@
 
 typedef float EcalCATIAGainRatio;
 typedef EcalFloatCondObjectContainer EcalCATIAGainRatioMap;
-typedef EcalCATIAGainRatioMap EcalGainRatios;
+typedef EcalCATIAGainRatioMap EcalCATIAGainRatios;
 
 #endif

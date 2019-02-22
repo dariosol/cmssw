@@ -46,7 +46,7 @@ EcalCoder::setPedestals( const EcalPedestals* pedestals )
 }
 
 void  
-EcalCoder::setGainRatios( const EcalGainRatios* gainRatios ) 
+EcalCoder::setGainRatios( const EcalCATIAGainRatios* gainRatios ) 
 {
    m_gainRatios = gainRatios ; 
 }

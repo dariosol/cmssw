@@ -40,7 +40,7 @@
 #include "CalibCalorimetry/EcalLaserCorrection/interface/EcalLaserDbRecord.h"
 #include "CondFormats/EcalObjects/interface/EcalADCToGeVConstant.h"
 #include "CondFormats/DataRecord/interface/EcalADCToGeVConstantRcd.h"
-#include "CondFormats/EcalObjects/interface/EcalGainRatio.h"
+#include "CondFormats/EcalObjects/interface/EcalGainRatios.h"
 #include "CondFormats/DataRecord/interface/EcalGainRatiosRcd.h"
 
 #include "CondFormats/ESObjects/interface/ESIntercalibConstants.h"
@@ -495,9 +495,9 @@ EcalDigiProducer::checkCalibrations(const edm::Event& event, const edm::EventSet
    const EcalADCToGeVConstant* agc = pAgc.product();
   
    // Gain Ratios
-   edm::ESHandle<EcalGainRatios> pRatio;
+   edm::ESHandle<EcalCATIAGainRatios> pRatio;
    eventSetup.get<EcalGainRatiosRcd>().get(pRatio);
-   const EcalGainRatios* gr = pRatio.product();
+   const EcalCATIAGainRatios* gr = pRatio.product();
 
    m_Coder->setGainRatios( gr );
    if( nullptr != m_APDCoder) m_APDCoder->setGainRatios( gr );

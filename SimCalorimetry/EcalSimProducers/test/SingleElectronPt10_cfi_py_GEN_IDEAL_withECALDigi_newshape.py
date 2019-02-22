@@ -102,7 +102,7 @@ process.ecalConditions = cms.ESSource("PoolDBESSource", CondDBSetup,
       #connect = cms.string('frontier://FrontierProd/CMS_COND_31X_ECAL'),
       #connect = cms.string('oracle://cms_orcoff_prep/CMS_COND_ECAL'),
       #authpath = cms.string('/afs/cern.ch/cms/DB/conddb'),
-      connect = cms.string('sqlite_file:/afs/cern.ch/work/a/argiro/ecalelecsim/CMSSW_10_3_1/simPulseShapePhaseII.db'),
+      connect = cms.string('sqlite_file:/afs/cern.ch/user/d/dsoldi/work/CMS/CMSEcalComplete/CMSSW_10_3_1/src/SimCalorimetry/EcalSimProducers/test/simPulseShapePhaseII.db'),
       toGet = cms.VPSet(         # overide Global Tag use EcalTBWeights_EBEE_offline
                   cms.PSet(
                       record = cms.string('EcalSimPulseShapeRcd') ,

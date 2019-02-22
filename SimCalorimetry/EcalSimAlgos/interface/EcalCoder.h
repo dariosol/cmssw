@@ -45,7 +45,7 @@ class EcalCoder
       /// can be fetched every event from the EventSetup
       void setPedestals( const EcalPedestals* pedestals ) ;
 
-      void setGainRatios( const EcalGainRatios* gainRatios ) ;
+      void setGainRatios( const EcalCATIAGainRatios* gainRatios ) ;
 
       void setFullScaleEnergy( double EBscale ,
 			       double EEscale   ) ;
@@ -82,7 +82,7 @@ class EcalCoder
    
       const EcalPedestals* m_peds ;
       
-      const EcalGainRatios* m_gainRatios ; // the electronics gains
+      const EcalCATIAGainRatios* m_gainRatios ; // the electronics gains
 
       const EcalIntercalibConstantsMC* m_intercals ; //record specific for simulation of gain variation in MC
 
