@@ -61,8 +61,13 @@ process.RECOSIMoutput = cms.OutputModule("PoolOutputModule",
 )
 
 #process.RECOSIMoutput.outputCommands.append('keep EBDigiCollection_ecalDigis_*_*')
+
+EcalCATIAGainRatioESProducer = cms.ESProducer(
+	"EcalCATIAGainRatioESProducer"
+)
     
 # Additional output definition
+
 
 # Other statements
 process.genstepfilter.triggerConditions=cms.vstring("generation_step")
@@ -96,6 +101,9 @@ process.digitisation_step = cms.Path(process.pdigi)
 process.genfiltersummary_step = cms.EndPath(process.genFilterSummary)
 process.endjob_step = cms.EndPath(process.endOfProcess)
 process.RECOSIMoutput_step = cms.EndPath(process.RECOSIMoutput)
+
+
+
 
 from CondCore.DBCommon.CondDBSetup_cfi import *
 process.ecalConditions = cms.ESSource("PoolDBESSource", CondDBSetup,

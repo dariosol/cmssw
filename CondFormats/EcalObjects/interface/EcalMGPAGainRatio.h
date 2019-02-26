@@ -32,5 +32,5 @@ class EcalMGPAGainRatio {
     float gain6Over1_;
 
   COND_SERIALIZABLE;
-};
+} ;
 #endif

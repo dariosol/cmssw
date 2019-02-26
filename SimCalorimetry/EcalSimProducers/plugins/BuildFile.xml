@@ -1,5 +1,12 @@
 <use   name="SimCalorimetry/EcalSimProducers"/>
 <use   name="SimGeneral/PreMixingModule"/>
+<use name="FWCore/Framework"/>
+<use name="FWCore/PluginManager"/>
+<use name="FWCore/ParameterSet"/>
+<use name="FWCore/Utilities"/>
+<use name="CondFormats/DataRecord"/>
+<use name="CondFormats/EcalObjects"/>
+<use name="CondFormats/ESObjects"/>
 <library   file="*.cc" name="SimCalorimetryEcalSimProducersPlugins">
   <flags   EDM_PLUGIN="1"/>
 </library>
