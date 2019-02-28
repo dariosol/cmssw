@@ -38,23 +38,23 @@ EcalCATIAGainRatiosESProducer::EcalCATIAGainRatiosESProducer(const edm::Paramete
 EcalCATIAGainRatiosESProducer::ReturnType
 EcalCATIAGainRatiosESProducer::produce(const EcalCATIAGainRatiosRcd& iRecord){
   std::cout<<"********Starting Production"<<std::endl;
-  std::shared_ptr<EcalCATIAGainRatios> prod;
-  EcalCATIAGainRatios *test = new EcalCATIAGainRatios();
+  auto prod = std::make_shared<EcalCATIAGainRatios>();
 
-   for (int iChannel = 0; iChannel < kEBChannels; iChannel++) {
-     std::cout<<"**********Set EB Values "<<iChannel<<std::endl;
-     EBDetId myEBDetId = EBDetId::unhashIndex(iChannel);
-     std::cout<<"**********EB ID "<<myEBDetId.rawId()<<std::endl;
+  std::cout<<"**********Set EB Values "<<std::endl;
+
+  for (int iChannel = 0; iChannel < kEBChannels; iChannel++) {
+    EBDetId myEBDetId = EBDetId::unhashIndex(iChannel);
     float val = 10;
-    test->setValue(myEBDetId.rawId(), val);
+    prod->setValue(myEBDetId.rawId(), val);
   }
-   
-   for (int iChannel = 0; iChannel < kEEChannels; iChannel++) {
-     std::cout<<"**********Set EE Values "<<iChannel<<std::endl;
-     EEDetId myEEDetId = EEDetId::unhashIndex(iChannel);     
-     float val = 10;
-     prod->setValue(myEEDetId.rawId(), val);
-   }
+
+  std::cout<<"**********Set EE Values "<<std::endl;
+
+  for (int iChannel = 0; iChannel < kEEChannels; iChannel++) {
+    EEDetId myEEDetId = EEDetId::unhashIndex(iChannel);     
+    float val = 10;
+    prod->setValue(myEEDetId.rawId(), val);
+  }
    
   
   
