@@ -15,5 +15,6 @@
 
 // user include files
 #include "FWCore/Utilities/interface/typelookup.h"
-#include "CondFormats/DataRecord/interface/EcalCATIAGainRatiosRcd.h"
-TYPELOOKUP_DATA_REG(EcalCATIAGainRatiosRcd);
+//#include "CondFormats/DataRecord/interface/EcalCATIAGainRatiosRcd.h"
+#include "CondFormats/EcalObjects/interface/EcalCATIAGainRatios.h"
+TYPELOOKUP_DATA_REG(EcalCATIAGainRatios);

@@ -1,8 +1,5 @@
-//#ifndef CondFormats_DataRecord_EcalGainRatiosRcd_H
-//#define CondFormats_DataRecord_EcalGainRatiosRcd_H
-
-#ifndef ECALGGAINRATIOSRCD_H
-#define ECALGGAINRATIOSRCD_H
+#ifndef CondFormats_DataRecord_EcalCATIAGainRatiosRcd_H
+#define CondFormats_DataRecord_EcalCATIAGainRatiosRcd_H
 
 #include "FWCore/Framework/interface/EventSetupRecordImplementation.h"
 class EcalCATIAGainRatiosRcd : public edm::eventsetup::EventSetupRecordImplementation<EcalCATIAGainRatiosRcd> {};

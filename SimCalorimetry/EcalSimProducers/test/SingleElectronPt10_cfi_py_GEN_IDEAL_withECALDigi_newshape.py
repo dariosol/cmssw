@@ -13,6 +13,7 @@ process = cms.Process('DIGI')
 process.load('Configuration.StandardSequences.Services_cff')
 process.load('SimGeneral.HepPDTESSource.pythiapdt_cfi')
 process.load('FWCore.MessageService.MessageLogger_cfi')
+process.load('SimCalorimetry.EcalSimProducers.esCATIAGainProducer_cfi')
 process.load('Configuration.EventContent.EventContent_cff')
 process.load('SimGeneral.MixingModule.mixNoPU_cfi')
 process.load('Configuration.StandardSequences.GeometryRecoDB_cff')
@@ -62,9 +63,7 @@ process.RECOSIMoutput = cms.OutputModule("PoolOutputModule",
 
 #process.RECOSIMoutput.outputCommands.append('keep EBDigiCollection_ecalDigis_*_*')
 
-EcalCATIAGainRatioESProducer = cms.ESProducer(
-	"EcalCATIAGainRatioESProducer"
-)
+
     
 # Additional output definition
 
@@ -120,7 +119,12 @@ process.ecalConditions = cms.ESSource("PoolDBESSource", CondDBSetup,
 )
 process.es_prefer_ecalPulseShape = cms.ESPrefer("PoolDBESSource","ecalConditions")
 
+process.EcalCATIAGainRatiosESProducer = cms.ESProducer(
+	"EcalCATIAGainRatiosESProducer",
+	ComponentName = cms.string('test')
+)
 
+#process.es_prefer_EcalCATIAGainRatioESProducer = cms.ESPrefer("EcalCATIAGainRatioESProducer","EcalCATIAGainRatioESProducer")
 
 # Schedule definition
 process.schedule = cms.Schedule(process.generation_step,process.genfiltersummary_step,process.simulation_step,process.digitisation_step,process.endjob_step,process.RECOSIMoutput_step)
