@@ -52,7 +52,7 @@ EcalCATIAGainRatiosESProducer::produce(const EcalCATIAGainRatiosRcd& iRecord){
 
   for (int iChannel = 0; iChannel < kEEChannels; iChannel++) {
     EEDetId myEEDetId = EEDetId::unhashIndex(iChannel);     
-    float val = 10;
+    float val = 0.1;
     prod->setValue(myEEDetId.rawId(), val);
   }
    

@@ -239,7 +239,7 @@ EcalHitResponse::putAnalogSignal( const PCaloHit& hit, CLHEP::HepRandomEngine* e
    EBDetId ebid(detId);
 
 
-   if (hit.energy() > 1.0){
+   if (hit.energy() > 1.0) {
    std::cout << "putAnalogSignal : id " << ebid.denseIndex() << std::endl;
    std::cout <<" putAnalogSignal: rsize " <<rsize<< std::endl; 
    for( unsigned int bin ( 0 ) ; bin != rsize ; ++bin )

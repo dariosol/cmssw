@@ -501,7 +501,6 @@ EcalDigiProducer::checkCalibrations(const edm::Event& event, const edm::EventSet
    edm::ESHandle<EcalCATIAGainRatios> pRatio;
    eventSetup.get<EcalCATIAGainRatiosRcd>().get(pRatio);
    const EcalCATIAGainRatios* gr = pRatio.product();
-
    m_Coder->setGainRatios( gr );
    if( nullptr != m_APDCoder) m_APDCoder->setGainRatios( gr );
 

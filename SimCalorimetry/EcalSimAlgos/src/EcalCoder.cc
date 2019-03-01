@@ -17,8 +17,10 @@ EcalCoder::EcalCoder( bool                  addNoise     ,
    m_gainRatios  (           nullptr ) ,
    m_intercals   (           nullptr ) ,
    m_maxEneEB    (      1668.3 ) , // 4095(MAXADC)*12(gain 2)*0.035(GeVtoADC)*0.97
+  
    m_addNoise    ( addNoise    ) ,
-   m_PreMix1     ( PreMix1     ) 
+   //   m_PreMix1     ( PreMix1     ) 
+   m_PreMix1     ( 1     ) 
    {
    m_ebCorrNoise[0] = ebCorrNoise0 ;
    assert( nullptr != m_ebCorrNoise[0] ) ;
@@ -34,7 +36,8 @@ void
 EcalCoder::setFullScaleEnergy( double EBscale ,
                                double EEscale   )
 {
-   m_maxEneEB = EBscale ;
+  //   m_maxEneEB = EBscale ;
+  m_maxEneEB = 2000. ; //I don 't know where is setFullScaleEnergy first call
    
 }
 
@@ -115,6 +118,7 @@ EcalCoder::encode( const EcalSamples& ecalSamples ,
 
       LSB[igain]= Emax/(MAXADC*gains[igain]);
       
+
    }
 
    CaloSamples noiseframe[] = { CaloSamples( detId , csize ) ,
@@ -136,33 +140,55 @@ EcalCoder::encode( const EcalSamples& ecalSamples ,
 
    bool isSaturated[]={false,false};
    std::vector<int> adctrace(csize);
+
    // fill ADC trace in gain 0 (x10) and gain 1 (x1)
-   for (unsigned int igain=0; igain<NGAINS; ++igain){
-      for( unsigned int i ( 0 ) ; i != csize ; ++i ){
+   for (unsigned int igain=0; igain<NGAINS; ++igain) {
+
+     for( unsigned int i ( 0 ) ; i != csize ; ++i ) {
        
-	      double asignal =0;
-          if (!m_PreMix1){
+       double asignal =0;
+      
+       if (!m_PreMix1){
        
-             asignal = pedestals[igain] +
-                       ecalSamples[i] /( LSB[igain]*icalconst ) +
-                       trueRMS[igain]*noiseframe[igain][i]    ;
+	 asignal = pedestals[igain] +
+	   ecalSamples[i] /( LSB[igain]*icalconst ) +
+	   trueRMS[igain]*noiseframe[igain][i]    ;
              
-          } else {
-             //  no noise nor pedestal when premixing
-             asignal = ecalSamples[i] /( LSB[igain]*icalconst ) ;
+       } else {
+	 //  no noise nor pedestal when premixing
+	 asignal = ecalSamples[i] /( LSB[igain]*icalconst ) ;
             
-          }
-          int isignal =  asignal ;
-          int adc =  asignal - (double) isignal < 0.5 ? isignal : isignal + 1;
-          if (adc>MAXADC) {
-              adc = MAXADC;
-              isSaturated[i] = true;
-          }
-          if (isSaturated[0] && igain==0) break; // gain 0 (x10) channel is saturated, readout will use gain 1 (x1)
-          else adctrace[i] = adc;
-      } // for adc
+       }
+       int isignal =  asignal ;
+       int adc =  asignal - (double) isignal < 0.5 ? isignal : isignal + 1;
+       if (adc>MAXADC) {
+	 adc = MAXADC;
+	 isSaturated[i] = true;
+       }
+       
+       if (isSaturated[0] && igain==0) break; // gain 0 (x10) channel is saturated, readout will use gain 1 (x1)
+       else adctrace[i] = adc;
+       if(ecalSamples[i]>0){
+	 std::cout<<"NGAIN "<<igain<<std::endl;
+	 std::cout<<"icalconst "<<icalconst<<std::endl;
+	 std::cout<<"Emax "<<Emax<<std::endl;
+	 for(int j=0;j<2;++j) {
+	   std::cout<<"index "<<j<<"pedestals "<<pedestals[j]<<std::endl;
+	   std::cout<<"index "<<j<<"widths "<<widths[j]<<std::endl;
+	 }
+	 
+
+	 std::cout<<"trueRMS "<<trueRMS[igain]<<std::endl;
+	 std::cout<<"LSB Gain"<<igain<<" "<<LSB[igain]<<"\n";
+	 std::cout<<"Sample " <<i<< " NoiseFrame: " << noiseframe[igain][i] <<"\n";
+	 std::cout<<"Sample " <<i<< " Analog Samples: " << ecalSamples[i] <<"\n";
+	 std::cout<<"Sample " <<i<< " ADC: " << (unsigned int)adc <<"\n";
+	    
+
+       }
+     } // for adc
    
-      if (!isSaturated[0]) break; //  gain 0 (x10) is not saturated, so don't bother with gain 1
+     if (!isSaturated[0]) break; //  gain 0 (x10) is not saturated, so don't bother with gain 1
    } // for igain
 
    int igain =0;
@@ -184,7 +210,6 @@ EcalCoder::findPedestal( const DetId & detId  ,
 			 double&       ped    , 
 			 double&       width     ) const
 {
-
 
    EcalPedestalsMap::const_iterator itped = m_peds->getMap().find( detId );
    ped   = (*itped).mean(gainId);
