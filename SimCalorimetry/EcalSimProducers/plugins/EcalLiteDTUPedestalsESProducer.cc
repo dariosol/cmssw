@@ -59,8 +59,11 @@ EcalLiteDTUPedestalsESProducer::produce(const EcalLiteDTUPedestalsRcd& iRecord){
   for (int iChannel = 0; iChannel < kEEChannels; iChannel++) {
     EBDetId myEBDetId = EBDetId::unhashIndex(iChannel);
     EcalLiteDTUPed ped;
-    ped.setMean(0,110);
-    ped.setRMS(1,101);
+     ped.setMean(0,110);
+    ped.setRMS(0,0.110);
+    
+    ped.setMean(1,101);
+    ped.setRMS(1,0.101);
     prod->insert(std::make_pair(myEBDetId,ped));
   }
    

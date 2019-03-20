@@ -114,9 +114,8 @@ EcalCoder::encode( const EcalSamples& ecalSamples ,
                     igain , 
                     pedestals[igain] ,        
                     widths[igain]      ) ;
-
-     
-      trueRMS[igain] = std::sqrt( widths[igain]*widths[igain] - 1./12. ) ;
+      //I insert an absolute value in the trueRMS
+      trueRMS[igain] = std::sqrt( std::fabs(widths[igain]*widths[igain] - 1./12.) ) ;
 
       // set nominal value first
       findGains( detId , gains  );               
@@ -147,10 +146,8 @@ EcalCoder::encode( const EcalSamples& ecalSamples ,
    std::vector<int> adctrace(csize);
 
    // fill ADC trace in gain 0 (x10) and gain 1 (x1)
-     //NOTE: Before was  pedestals[igain], widths[igain], but 
-     //after the modifications for CATIA, the index 0 does not work. 
-     //so I forced to take the index 1. We still don't know much about
-     //future pedestals. Up to now, we go with the 2018 values.
+     //NOTE: Before was  pedestals[igain], widths[igain]
+   
    for (unsigned int igain=0; igain<NGAINS; ++igain) {
 
      for( unsigned int i ( 0 ) ; i != csize ; ++i ) {
@@ -160,7 +157,7 @@ EcalCoder::encode( const EcalSamples& ecalSamples ,
        if (!m_PreMix1) {
 	 asignal = pedestals[i] +
 	   ecalSamples[i] /( LSB[igain]*icalconst ) +
-	   trueRMS[1]*noiseframe[igain][i]    ;
+	   trueRMS[i]*noiseframe[igain][i]    ;
              
        } else {
 	 //  no noise nor pedestal when premixing
@@ -184,12 +181,12 @@ EcalCoder::encode( const EcalSamples& ecalSamples ,
 	 std::cout<<"Emax "<<Emax<<std::endl;
 
 	 for(int j = 0; j < 2; ++j) {
-	   std::cout<<"index "<<j<<"pedestals "<<pedestals[j]<<std::endl;
-	   std::cout<<"index "<<j<<"widths "<<widths[j]<<std::endl;
+	   std::cout<<"index "<<j<<" pedestals "<<pedestals[j]<<std::endl;
+	   std::cout<<"index "<<j<<" widths "<<widths[j]<<std::endl;
 	 }
 	 
 	 std::cout<<"trueRMS "<<trueRMS[igain]<<std::endl;
-	 std::cout<<"LSB Gain"<<igain<<" "<<LSB[igain]<<"\n";
+	 std::cout<<"LSB Gain "<<igain<<" "<<LSB[igain]<<"\n";
 	 std::cout<<"Sample " <<i<< " NoiseFrame: " << noiseframe[igain][i] <<"\n";
 	 std::cout<<"Sample " <<i<< " Analog Samples: " << ecalSamples[i] <<"\n";
 	 std::cout<<"Sample " <<i<< " ADC: " << (unsigned int)adc <<"\n";
