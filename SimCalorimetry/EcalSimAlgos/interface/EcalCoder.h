@@ -3,7 +3,8 @@
 #define EcalSimAlgos_EcalCoder_h 1
 
 #include "CalibFormats/CaloObjects/interface/CaloTSamples.h"
-#include "CondFormats/EcalObjects/interface/EcalPedestals.h"
+//#include "CondFormats/EcalObjects/interface/EcalPedestals.h"
+#include "CondFormats/EcalObjects/interface/EcalLiteDTUPedestals.h"
 #include "CondFormats/EcalObjects/interface/EcalIntercalibConstantsMC.h"
 #include "CondFormats/EcalObjects/interface/EcalCATIAGainRatios.h"
 #include "SimCalorimetry/EcalSimAlgos/interface/EcalCorrelatedNoiseMatrix.h"
@@ -12,6 +13,7 @@ template<typename M> class CorrelatedNoisifier ;
 class EcalMGPASample;
 class EcalDataFrame;
 class DetId;
+class EcalLiteDTUPed;
 
 #include<vector>
 
@@ -29,8 +31,8 @@ class EcalCoder
       typedef CorrelatedNoisifier<EcalCorrMatrix> Noisifier ;
 
       enum { NBITS         =   12 , // number of available bits
-             MAXADC        = 4095 , // 2^12 -1,  adc max range
-             NGAINS        =    2   // number of electronic gains
+             MAXADC        = 4095,  // 2^12 -1,  adc max range
+	     NGAINS        =    2   // number of electronic gains
       };
 
       /// ctor
@@ -43,7 +45,7 @@ class EcalCoder
       virtual ~EcalCoder() ;
 
       /// can be fetched every event from the EventSetup
-      void setPedestals( const EcalPedestals* pedestals ) ;
+      void setPedestals( const EcalLiteDTUPedestals* pedestals ) ;
 
       void setGainRatios( const EcalCATIAGainRatios* gainRatios ) ;
 
@@ -80,7 +82,7 @@ class EcalCoder
       void findIntercalibConstant( const DetId& detId ,
 				   double&      icalconst ) const ;
    
-      const EcalPedestals* m_peds ;
+      const EcalLiteDTUPedestals* m_peds ;
       
       const EcalCATIAGainRatios* m_gainRatios ; // the electronics gains
 
@@ -92,7 +94,8 @@ class EcalCoder
       bool m_PreMix1 ;   // Follow necessary steps for PreMixing input
 
       const Noisifier* m_ebCorrNoise[NGAINS] ;
-      
+
+
 };
 
 #endif

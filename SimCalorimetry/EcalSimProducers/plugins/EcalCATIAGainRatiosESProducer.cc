@@ -44,7 +44,7 @@ EcalCATIAGainRatiosESProducer::produce(const EcalCATIAGainRatiosRcd& iRecord){
 
   for (int iChannel = 0; iChannel < kEBChannels; iChannel++) {
     EBDetId myEBDetId = EBDetId::unhashIndex(iChannel);
-    float val = 10;
+    float val = 10.;
     prod->setValue(myEBDetId.rawId(), val);
   }
 
@@ -52,7 +52,7 @@ EcalCATIAGainRatiosESProducer::produce(const EcalCATIAGainRatiosRcd& iRecord){
 
   for (int iChannel = 0; iChannel < kEEChannels; iChannel++) {
     EEDetId myEEDetId = EEDetId::unhashIndex(iChannel);     
-    float val = 10;
+    float val = 10.;
     prod->setValue(myEEDetId.rawId(), val);
   }
    

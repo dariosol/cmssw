@@ -14,6 +14,7 @@ process.load('Configuration.StandardSequences.Services_cff')
 process.load('SimGeneral.HepPDTESSource.pythiapdt_cfi')
 process.load('FWCore.MessageService.MessageLogger_cfi')
 process.load('SimCalorimetry.EcalSimProducers.esCATIAGainProducer_cfi')
+process.load('SimCalorimetry.EcalSimProducers.esEcalLiteDTUPedestalsProducer_cfi')
 process.load('Configuration.EventContent.EventContent_cff')
 process.load('SimGeneral.MixingModule.mixNoPU_cfi')
 process.load('Configuration.StandardSequences.GeometryRecoDB_cff')
@@ -21,14 +22,16 @@ process.load('Configuration.Geometry.GeometrySimDB_cff')
 process.load('Configuration.StandardSequences.MagneticField_cff')
 process.load('Configuration.StandardSequences.Generator_cff')
 process.load('IOMC.EventVertexGenerators.VtxSmearedRealistic50ns13TeVCollision_cfi')
+process.load('Calibration.EcalCalibAlgos.ecalPedestalPCLHarvester_cfi')
 process.load('GeneratorInterface.Core.genFilterSummary_cff')
 process.load('Configuration.StandardSequences.SimIdeal_cff')
 process.load('Configuration.StandardSequences.Digi_cff')
 process.load('Configuration.StandardSequences.EndOfProcess_cff')
-process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_cff')
+process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_cff'
+)
 
 process.maxEvents = cms.untracked.PSet(
-    input = cms.untracked.int32(10)
+    input = cms.untracked.int32(1)
 )
 
 # Input source
@@ -56,9 +59,10 @@ process.RECOSIMoutput = cms.OutputModule("PoolOutputModule",
         filterName = cms.untracked.string('')
     ),
     fileName = cms.untracked.string('SingleElectronPt10_pythia8_cfi_py_GEN_SIM_DIGI.root'),
-    outputCommands = process.RECOSIMEventContent.outputCommands,
-    #outputCommands = cms.untracked.vstring('keep EBDigiCollection_ecalDigis_*_*'),     
-    splitLevel = cms.untracked.int32(0)
+#    outputCommands = process.RECOSIMEventContent.outputCommands,
+    outputCommands = cms.untracked.vstring('keep *',
+                        'drop *_mix_*_*'),
+    splitLevel = cms.untracked.int32(1)
 )
 
 #process.RECOSIMoutput.outputCommands.append('keep EBDigiCollection_ecalDigis_*_*')
@@ -121,8 +125,21 @@ process.es_prefer_ecalPulseShape = cms.ESPrefer("PoolDBESSource","ecalConditions
 
 process.EcalCATIAGainRatiosESProducer = cms.ESProducer(
 	"EcalCATIAGainRatiosESProducer",
-	ComponentName = cms.string('test')
+	ComponentName = cms.string('testGainProducer')
 )
+
+process.EcalLiteDTUPedestalsESProducer = cms.ESProducer(
+	"EcalLiteDTUPedestalsESProducer",
+	ComponentName = cms.string('testPedestalProducer')
+)
+
+#LOGGER:
+process.MessageLogger.cout = cms.untracked.PSet(
+	threshold = cms.untracked.string("DEBUG"),
+	default = cms.untracked.PSet( limit = cms.untracked.int32(0) ),
+	FwkReport = cms.untracked.PSet( limit = cms.untracked.int32(-1) ),
+)
+
 
 #process.es_prefer_EcalCATIAGainRatioESProducer = cms.ESPrefer("EcalCATIAGainRatioESProducer","EcalCATIAGainRatioESProducer")
 

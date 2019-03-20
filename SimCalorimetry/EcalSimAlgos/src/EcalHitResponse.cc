@@ -214,7 +214,7 @@ EcalHitResponse::putAnalogSignal( const PCaloHit& hit, CLHEP::HepRandomEngine* e
    const DetId detId ( hit.id() ) ;
 
    const CaloSimParameters* parameters ( params( detId ) ) ;
-   std::cout<< "Hit Energy" << hit.energy() << std::endl;
+   
    const double signal ( analogSignalAmplitude( detId, hit.energy(), engine ) ) ;
 
    double time = hit.time();
@@ -239,9 +239,10 @@ EcalHitResponse::putAnalogSignal( const PCaloHit& hit, CLHEP::HepRandomEngine* e
    EBDetId ebid(detId);
 
 
-   if (hit.energy() > 1.0){
-   std::cout << "putAnalogSignal : id " << ebid.denseIndex() << std::endl;
-   std::cout <<" putAnalogSignal: rsize " <<rsize<< std::endl; 
+   if (hit.energy() > 1.0) {
+     std::cout << "Hit Energy      : id " << hit.energy() << std::endl;
+     std::cout << "putAnalogSignal : id " << ebid.denseIndex() << std::endl;
+     std::cout <<" putAnalogSignal : rsize " <<rsize<< std::endl; 
    for( unsigned int bin ( 0 ) ; bin != rsize ; ++bin )
    {
       result[ bin ] += (*shape())( binTime )*signal ;

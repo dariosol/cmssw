@@ -32,19 +32,35 @@
 #include "SimGeneral/MixingModule/interface/PileUpEventPrincipal.h"
 #include "SimDataFormats/CaloHit/interface/PCaloHit.h"
 #include "Geometry/Records/interface/CaloGeometryRecord.h"
-#include "CondFormats/EcalObjects/interface/EcalPedestals.h"
-#include "CondFormats/DataRecord/interface/EcalPedestalsRcd.h"
+//My changing:
+//************************************
+//From
+//#include "CondFormats/EcalObjects/interface/EcalPedestals.h"
+//#include "CondFormats/DataRecord/interface/EcalPedestalsRcd.h"
+//to
+#include "CondFormats/EcalObjects/interface/EcalLiteDTUPedestals.h"
+#include "CondFormats/DataRecord/interface/EcalLiteDTUPedestalsRcd.h"
+//***********************************
+
 #include "CondFormats/EcalObjects/interface/EcalIntercalibConstantsMC.h"
 #include "CondFormats/DataRecord/interface/EcalIntercalibConstantsMCRcd.h"
 #include "CalibCalorimetry/EcalLaserCorrection/interface/EcalLaserDbService.h"
 #include "CalibCalorimetry/EcalLaserCorrection/interface/EcalLaserDbRecord.h"
 #include "CondFormats/EcalObjects/interface/EcalADCToGeVConstant.h"
 #include "CondFormats/DataRecord/interface/EcalADCToGeVConstantRcd.h"
+
+//My changing:
+//************************************
+//From
 //#include "CondFormats/EcalObjects/interface/EcalGainRatios.h"
 //#include "CondFormats/DataRecord/interface/EcalGainRatiosRcd.h"
-
+//to
 #include "CondFormats/EcalObjects/interface/EcalCATIAGainRatios.h"
 #include "CondFormats/DataRecord/interface/EcalCATIAGainRatiosRcd.h"
+//************************************
+
+
+
 
 #include "CondFormats/ESObjects/interface/ESIntercalibConstants.h"
 #include "CondFormats/DataRecord/interface/ESIntercalibConstantsRcd.h"
@@ -463,9 +479,9 @@ EcalDigiProducer::checkCalibrations(const edm::Event& event, const edm::EventSet
 {
    // Pedestals from event setup
 
-   edm::ESHandle<EcalPedestals>            dbPed   ;
-   eventSetup.get<EcalPedestalsRcd>().get( dbPed ) ;
-   const EcalPedestals* pedestals        ( dbPed.product() ) ;
+   edm::ESHandle<EcalLiteDTUPedestals>            dbPed   ;
+   eventSetup.get<EcalLiteDTUPedestalsRcd>().get( dbPed ) ;
+   const EcalLiteDTUPedestals* pedestals        ( dbPed.product() ) ;
   
    m_Coder->setPedestals( pedestals ) ;
    if( nullptr != m_APDCoder ) m_APDCoder->setPedestals( pedestals ) ;
@@ -501,7 +517,6 @@ EcalDigiProducer::checkCalibrations(const edm::Event& event, const edm::EventSet
    edm::ESHandle<EcalCATIAGainRatios> pRatio;
    eventSetup.get<EcalCATIAGainRatiosRcd>().get(pRatio);
    const EcalCATIAGainRatios* gr = pRatio.product();
-
    m_Coder->setGainRatios( gr );
    if( nullptr != m_APDCoder) m_APDCoder->setGainRatios( gr );
 
