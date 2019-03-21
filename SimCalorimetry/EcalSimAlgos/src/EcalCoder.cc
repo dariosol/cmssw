@@ -10,22 +10,29 @@
 
 
 EcalCoder::EcalCoder( bool                  addNoise     , 
+		      bool                  isPhase2     , ////////////////////////////////////////////////////////////NEW
 		      bool                  PreMix1      ,
 		      EcalCoder::Noisifier* ebCorrNoise0 ,
 		      EcalCoder::Noisifier* ebCorrNoise1 ) :
    m_peds        (           nullptr ) ,
    m_gainRatios  (           nullptr ) ,
+   m_gainRatiosPhase2  (     nullptr ) ,
    m_intercals   (           nullptr ) ,
    m_maxEneEB    (      1668.3 ) , // 4095(MAXADC)*12(gain 2)*0.035(GeVtoADC)*0.97
   
    m_addNoise    ( addNoise    ) ,
+   m_isPhase2    ( isPhase2    ) ,
    //   m_PreMix1     ( PreMix1     ) 
-   m_PreMix1     ( 1     ) 
-   {
+   //m_PreMix1     ( 1     ) 
+   //{
+   //m_maxEneEB    (      2000. ) , // Maximum for CATIA: LSB gain 10: 0.048 MeV
+   //m_addNoise    ( addNoise    ) ,
+   m_PreMix1     ( PreMix1     )  
+{
    m_ebCorrNoise[0] = ebCorrNoise0 ;
    assert( nullptr != m_ebCorrNoise[0] ) ;
    m_ebCorrNoise[1] = ebCorrNoise1 ;
-
+  
 }  
 
 EcalCoder::~EcalCoder()
@@ -49,9 +56,15 @@ EcalCoder::setPedestals( const EcalPedestals* pedestals )
 }
 
 void  
-EcalCoder::setGainRatios( const EcalCATIAGainRatios* gainRatios ) 
+EcalCoder::setGainRatios( const EcalGainRatios* gainRatios ) 
 {
    m_gainRatios = gainRatios ; 
+}
+
+void  
+EcalCoder::setGainRatiosPhase2( const EcalCATIAGainRatios* gainRatiosPhase2 ) 
+{
+   m_gainRatiosPhase2 = gainRatiosPhase2 ; 
 }
 
 void 
@@ -93,25 +106,29 @@ EcalCoder::encode( const EcalSamples& ecalSamples ,
    //....initialisation
    if ( ecalSamples[5] > 0. ) LogDebug("EcalCoder") << "Input caloSample" << "\n" << ecalSamples;
   
-   double LSB[NGAINS];
+
+   //N Gains set to 2 in the .h
    double pedestals[NGAINS];
    double widths[NGAINS];
    float  gains[NGAINS];
+   double LSB[NGAINS];
    double trueRMS[NGAINS];
+
 
    double icalconst = 1. ;
    findIntercalibConstant( detId, icalconst );
 
+   
    for( unsigned int igain ( 0 ); igain < NGAINS ; ++igain ) 
    {
       // fill in the pedestal and width
+  
       findPedestal( detId ,
                     igain , 
-                    pedestals[igain] , 
+                    pedestals[igain] ,        
                     widths[igain]      ) ;
-
-     
-      trueRMS[igain] = std::sqrt( widths[igain]*widths[igain] - 1./12. ) ;
+      //I insert an absolute value in the trueRMS
+      trueRMS[igain] = std::sqrt( std::fabs(widths[igain]*widths[igain] - 1./12.) ) ;
 
       // set nominal value first
       findGains( detId , gains  );               
@@ -142,6 +159,7 @@ EcalCoder::encode( const EcalSamples& ecalSamples ,
    std::vector<int> adctrace(csize);
 
    // fill ADC trace in gain 0 (x10) and gain 1 (x1)
+
    for (unsigned int igain=0; igain<NGAINS; ++igain) {
 
      for( unsigned int i ( 0 ) ; i != csize ; ++i ) {
@@ -211,7 +229,9 @@ EcalCoder::findPedestal( const DetId & detId  ,
 			 double&       width     ) const
 {
 
+
    EcalPedestalsMap::const_iterator itped = m_peds->getMap().find( detId );
+
    ped   = (*itped).mean(gainId);
    width = (*itped).rms(gainId);
   
@@ -226,14 +246,22 @@ EcalCoder::findPedestal( const DetId & detId  ,
 
 
 void 
-EcalCoder::findGains( const DetId & detId , float Gains[]        ) const
+EcalCoder::findGains( const DetId & detId , float Gains[]       ) const
 {
-
-   EcalCATIAGainRatioMap::const_iterator grit = m_gainRatios->getMap().find( detId );
-
-   Gains[1] = 1.;
-   Gains[0] = Gains[1]*(*grit);
    
+   if(m_isPhase2){
+     EcalCATIAGainRatioMap::const_iterator grit = m_gainRatiosPhase2->getMap().find( detId );
+     Gains[1] = 1.;
+     Gains[0] = Gains[1]*(*grit);
+   }
+
+   else{
+     EcalGainRatioMap::const_iterator grit = m_gainRatios->getMap().find( detId );
+     Gains[0] = 0.;
+     Gains[3] = 1.;
+     Gains[2] = (*grit).gain6Over1();
+     Gains[1] = Gains[2]*( (*grit).gain12Over6() );  
+   }
   
    if ( (detId.subdetId() != EcalBarrel) && (detId.subdetId() != EcalEndcap) ) 
    { 
@@ -241,6 +269,23 @@ EcalCoder::findGains( const DetId & detId , float Gains[]        ) const
    }   
   
 }
+
+// void 
+// EcalCoder::findGains( const DetId & detId , float Gains[]   ) const
+// {
+
+//    EcalCATIAGainRatioMap::const_iterator grit = m_gainRatios->getMap().find( detId );
+
+//    Gains[1] = 1.;
+//    Gains[0] = Gains[1]*(*grit);
+   
+  
+//    if ( (detId.subdetId() != EcalBarrel) && (detId.subdetId() != EcalEndcap) ) 
+//    { 
+//       edm::LogError("EcalCoder") << "Could not find gain ratios for " << detId.rawId() << " among the " << m_gainRatios->getMap().size();
+//    }   
+  
+// }
 
 void 
 EcalCoder::findIntercalibConstant( const DetId& detId, 

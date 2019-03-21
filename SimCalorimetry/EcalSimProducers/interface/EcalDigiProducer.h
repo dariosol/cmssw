@@ -100,6 +100,7 @@ class EcalDigiProducer : public DigiAccumulatorMixMod {
       bool  m_useLCcorrection;
 
       const bool m_apdSeparateDigi ;
+      const bool m_isPhase2; /////////////////////////////////////////////////////////////////NEW
 
       const double m_EBs25notCont ;
       const double m_EEs25notCont ;

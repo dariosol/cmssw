@@ -13,7 +13,6 @@ process = cms.Process('DIGI')
 process.load('Configuration.StandardSequences.Services_cff')
 process.load('SimGeneral.HepPDTESSource.pythiapdt_cfi')
 process.load('FWCore.MessageService.MessageLogger_cfi')
-process.load('SimCalorimetry.EcalSimProducers.esCATIAGainProducer_cfi')
 process.load('Configuration.EventContent.EventContent_cff')
 process.load('SimGeneral.MixingModule.mixNoPU_cfi')
 process.load('Configuration.StandardSequences.GeometryRecoDB_cff')
@@ -39,6 +38,23 @@ process.source = cms.Source("EmptySource")
 process.options = cms.untracked.PSet(
 
 )
+
+import FWCore.ParameterSet.VarParsing as VarParsing
+options = VarParsing.VarParsing()
+options.register('isPhase2',
+                 True, #default value
+                 VarParsing.VarParsing.multiplicity.singleton,
+                 VarParsing.VarParsing.varType.bool,
+                 "Phase2 electronics config flag")
+options.parseArguments()
+
+if options.isPhase2:
+	process.load('SimCalorimetry.EcalSimProducers.esCATIAGainProducer_cfi')
+else:
+	process.load('SimCalorimetry.EcalSimProducers.esGainProducer_cfi')
+
+process.load("SimCalorimetry.EcalSimProducers.ecalSimParameterMap_cff")
+process.ecalSimParameterMap.isPhase2  = options.isPhase2 
 
 # Production Info
 process.configurationMetadata = cms.untracked.PSet(
@@ -112,7 +128,7 @@ process.ecalConditions = cms.ESSource("PoolDBESSource", CondDBSetup,
       #connect = cms.string('frontier://FrontierProd/CMS_COND_31X_ECAL'),
       #connect = cms.string('oracle://cms_orcoff_prep/CMS_COND_ECAL'),
       #authpath = cms.string('/afs/cern.ch/cms/DB/conddb'),
-      connect = cms.string('sqlite_file:/afs/cern.ch/user/d/dsoldi/work/CMS/CMSEcalComplete/CMSSW_10_3_1/src/SimCalorimetry/EcalSimProducers/test/simPulseShapePhaseII.db'),
+      connect = cms.string('sqlite_file:/afs/cern.ch/user/r/rselvati/work/private/ECAL_simulation/CMSSW_10_3_1/src/SimCalorimetry/EcalSimProducers/test/simPulseShapePhaseII.db'),
       toGet = cms.VPSet(         # overide Global Tag use EcalTBWeights_EBEE_offline
                   cms.PSet(
                       record = cms.string('EcalSimPulseShapeRcd') ,
@@ -122,10 +138,16 @@ process.ecalConditions = cms.ESSource("PoolDBESSource", CondDBSetup,
 )
 process.es_prefer_ecalPulseShape = cms.ESPrefer("PoolDBESSource","ecalConditions")
 
-process.EcalCATIAGainRatiosESProducer = cms.ESProducer(
-	"EcalCATIAGainRatiosESProducer",
-	ComponentName = cms.string('test')
-)
+if options.isPhase2:
+	process.EcalCATIAGainRatiosESProducer = cms.ESProducer(
+		"EcalCATIAGainRatiosESProducer",
+		ComponentName = cms.string('test')
+	)
+else:
+	process.EcalGainRatiosESProducer = cms.ESProducer(
+		"EcalGainRatiosESProducer",
+		ComponentName = cms.string('test')
+	)
 
 #LOGGER:
 process.MessageLogger.cout = cms.untracked.PSet(

@@ -10,6 +10,7 @@ ecal_sim_parameter_map = cms.PSet(
     simHitToPhotoelectronsBarrel = cms.double(2250.0),
     syncPhase = cms.bool(True),
     doPhotostatistics = cms.bool(True),
-    photoelectronsToAnalogBarrel = cms.double(0.000444444)
+    photoelectronsToAnalogBarrel = cms.double(0.000444444),
+    isPhase2 = cms.bool(True) ####################################################### NEW
 )
 
