@@ -1,9 +1,11 @@
-<use   name="SimCalorimetry/EcalSimProducers"/>
-<use   name="SimGeneral/PreMixingModule"/>
+<use name="SimCalorimetry/EcalSimProducers"/>
+<use name="SimGeneral/PreMixingModule"/>
 <use name="FWCore/Framework"/>
 <use name="FWCore/PluginManager"/>
 <use name="FWCore/ParameterSet"/>
 <use name="FWCore/Utilities"/>
+<use name="PhysicsTools/UtilAlgos"/>
+<use name="PhysicsTools/PatAlgos"/>
 <use name="CondFormats/DataRecord"/>
 <use name="CondFormats/EcalObjects"/>
 <use name="CondFormats/ESObjects"/>

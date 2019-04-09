@@ -32,8 +32,16 @@
 #include "SimGeneral/MixingModule/interface/PileUpEventPrincipal.h"
 #include "SimDataFormats/CaloHit/interface/PCaloHit.h"
 #include "Geometry/Records/interface/CaloGeometryRecord.h"
-#include "CondFormats/EcalObjects/interface/EcalPedestals.h"
-#include "CondFormats/DataRecord/interface/EcalPedestalsRcd.h"
+//My changing:
+//************************************
+//From
+//#include "CondFormats/EcalObjects/interface/EcalPedestals.h"
+//#include "CondFormats/DataRecord/interface/EcalPedestalsRcd.h"
+//to
+#include "CondFormats/EcalObjects/interface/EcalLiteDTUPedestals.h"
+#include "CondFormats/DataRecord/interface/EcalLiteDTUPedestalsRcd.h"
+//***********************************
+
 #include "CondFormats/EcalObjects/interface/EcalIntercalibConstantsMC.h"
 #include "CondFormats/DataRecord/interface/EcalIntercalibConstantsMCRcd.h"
 #include "CalibCalorimetry/EcalLaserCorrection/interface/EcalLaserDbService.h"
@@ -41,11 +49,18 @@
 #include "CondFormats/EcalObjects/interface/EcalADCToGeVConstant.h"
 #include "CondFormats/DataRecord/interface/EcalADCToGeVConstantRcd.h"
 
-#include "CondFormats/EcalObjects/interface/EcalGainRatios.h" //Leave both EcalGainRatios and EcalCATIAGainRatios
-#include "CondFormats/DataRecord/interface/EcalGainRatiosRcd.h"
-
+//My changing:
+//************************************
+//From
+//#include "CondFormats/EcalObjects/interface/EcalGainRatios.h"
+//#include "CondFormats/DataRecord/interface/EcalGainRatiosRcd.h"
+//to
 #include "CondFormats/EcalObjects/interface/EcalCATIAGainRatios.h"
 #include "CondFormats/DataRecord/interface/EcalCATIAGainRatiosRcd.h"
+//************************************
+
+
+
 
 #include "CondFormats/ESObjects/interface/ESIntercalibConstants.h"
 #include "CondFormats/DataRecord/interface/ESIntercalibConstantsRcd.h"
@@ -81,7 +96,6 @@ EcalDigiProducer::EcalDigiProducer( const edm::ParameterSet& params,  edm::Consu
    m_hitsProducerTag  ( params.getParameter<std::string>("hitsProducer"    ) ) ,
    m_useLCcorrection  ( params.getUntrackedParameter<bool>("UseLCcorrection") ) ,
    m_apdSeparateDigi  ( params.getParameter<bool>       ("apdSeparateDigi") ) ,
-   m_isPhase2         ( params.getParameter<bool>       ("isPhase2") ) , //////////////////////////////////////////////////////////// NEW
 
    m_EBs25notCont     ( params.getParameter<double>     ("EBs25notContainment") ) ,
    m_EEs25notCont     ( params.getParameter<double>     ("EEs25notContainment") ) ,
@@ -97,7 +111,7 @@ EcalDigiProducer::EcalDigiProducer( const edm::ParameterSet& params,  edm::Consu
 			   m_readoutFrameSize ,
 			   params.getParameter<int>    ("binOfMaximum") , 
 			   params.getParameter<bool>   ("doPhotostatistics") ,
-			   params.getParameter<bool>   ("syncPhase") ) ),
+			   params.getParameter<bool>   ("syncPhase") ) ) ,
    
    m_apdDigiTag    ( params.getParameter<std::string> ("apdDigiTag"  )      ) ,
    m_apdParameters ( new APDSimParameters( 
@@ -244,7 +258,6 @@ EcalDigiProducer::EcalDigiProducer( const edm::ParameterSet& params,  edm::Consu
    m_EECorrNoise[2].reset( new CorrelatedNoisifier<EcalCorrMatrix>( eeMatrix[2] ) );
 
    m_Coder.reset( new EcalCoder( addNoise         , 
-				 m_isPhase2       , ////////////////////////////////////////////////////NEW
                                  m_PreMix1        ,
                                  m_EBCorrNoise[0].get() ,
                                  m_EBCorrNoise[1].get()) );
@@ -257,7 +270,6 @@ EcalDigiProducer::EcalDigiProducer( const edm::ParameterSet& params,  edm::Consu
    if( m_apdSeparateDigi )
    {
      m_APDCoder.reset( new EcalCoder( false            , 
-				      m_isPhase2       , ////////////////////////////////////////////////////NEW
                                       m_PreMix1        ,
                                       m_EBCorrNoise[0].get() ,
                                       m_EBCorrNoise[1].get() ));
@@ -467,9 +479,9 @@ EcalDigiProducer::checkCalibrations(const edm::Event& event, const edm::EventSet
 {
    // Pedestals from event setup
 
-   edm::ESHandle<EcalPedestals>            dbPed   ;
-   eventSetup.get<EcalPedestalsRcd>().get( dbPed ) ;
-   const EcalPedestals* pedestals        ( dbPed.product() ) ;
+   edm::ESHandle<EcalLiteDTUPedestals>            dbPed   ;
+   eventSetup.get<EcalLiteDTUPedestalsRcd>().get( dbPed ) ;
+   const EcalLiteDTUPedestals* pedestals        ( dbPed.product() ) ;
   
    m_Coder->setPedestals( pedestals ) ;
    if( nullptr != m_APDCoder ) m_APDCoder->setPedestals( pedestals ) ;
@@ -502,43 +514,18 @@ EcalDigiProducer::checkCalibrations(const edm::Event& event, const edm::EventSet
    const EcalADCToGeVConstant* agc = pAgc.product();
   
    // Gain Ratios
-   ///////////////////////////////////////////////////////////////////////////////////////////////////
+   edm::ESHandle<EcalCATIAGainRatios> pRatio;
+   eventSetup.get<EcalCATIAGainRatiosRcd>().get(pRatio);
+   const EcalCATIAGainRatios* gr = pRatio.product();
+   m_Coder->setGainRatios( gr );
+   if( nullptr != m_APDCoder) m_APDCoder->setGainRatios( gr );
+
+   
+
    double theGains[m_Coder->NGAINS];
-   if(m_isPhase2){
-     edm::ESHandle<EcalCATIAGainRatios> pRatio;
-     eventSetup.get<EcalCATIAGainRatiosRcd>().get(pRatio);
-     const EcalCATIAGainRatios* gr = pRatio.product();
-     m_Coder->setGainRatiosPhase2( gr );
-     if( nullptr != m_APDCoder) m_APDCoder->setGainRatiosPhase2( gr );
+   theGains[0] = 10. ;
+   theGains[1] = 1.;
 
-     theGains[0] = 10. ;
-     theGains[1] = 1.;
-   }
-
-   else{
-     edm::ESHandle<EcalGainRatios> pRatio;
-     eventSetup.get<EcalGainRatiosRcd>().get(pRatio);
-     const EcalGainRatios* gr = pRatio.product();
-
-     m_Coder->setGainRatios( gr );
-     if( nullptr != m_APDCoder) m_APDCoder->setGainRatios( gr );
-     
-     EcalMGPAGainRatio * defaultRatios = new EcalMGPAGainRatio();
-     
-     double theGains[m_Coder->NGAINS+2]; //////Before it was NGAINS+1. Set to NGAINS+2 in order to account for NGAINS=2 now
-     theGains[0] = 0.;
-     theGains[3] = 1.;
-     theGains[2] = defaultRatios->gain6Over1() ;
-     theGains[1] = theGains[2]*(defaultRatios->gain12Over6()) ;
-     
-     LogDebug("EcalDigi") << " Gains: " << "\n" << " g1 = " << theGains[1] 
-   			  << "\n" << " g2 = " << theGains[2] 
-   			  << "\n" << " g3 = " << theGains[3] ;
-     
-     delete defaultRatios;
-   }
-
-   ///////////////////////////////////////////////////////////////////////////////////////////////////
 
    const double EBscale (
       ( agc->getEBValue())*theGains[1]*(m_Coder->MAXADC)*m_EBs25notCont ) ;
@@ -678,4 +665,3 @@ void EcalDigiProducer::beginRun(edm::Run const& run, edm::EventSetup const& setu
    m_EEShape.setEventSetup(setup);
    m_APDShape.setEventSetup(setup);
 }
-

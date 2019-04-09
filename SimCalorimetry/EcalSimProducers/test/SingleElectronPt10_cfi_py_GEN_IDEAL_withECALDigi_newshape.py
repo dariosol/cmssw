@@ -13,6 +13,8 @@ process = cms.Process('DIGI')
 process.load('Configuration.StandardSequences.Services_cff')
 process.load('SimGeneral.HepPDTESSource.pythiapdt_cfi')
 process.load('FWCore.MessageService.MessageLogger_cfi')
+process.load('SimCalorimetry.EcalSimProducers.esCATIAGainProducer_cfi')
+process.load('SimCalorimetry.EcalSimProducers.esEcalLiteDTUPedestalsProducer_cfi')
 process.load('Configuration.EventContent.EventContent_cff')
 process.load('SimGeneral.MixingModule.mixNoPU_cfi')
 process.load('Configuration.StandardSequences.GeometryRecoDB_cff')
@@ -25,8 +27,7 @@ process.load('GeneratorInterface.Core.genFilterSummary_cff')
 process.load('Configuration.StandardSequences.SimIdeal_cff')
 process.load('Configuration.StandardSequences.Digi_cff')
 process.load('Configuration.StandardSequences.EndOfProcess_cff')
-process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_cff'
-)
+process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_cff')
 
 process.maxEvents = cms.untracked.PSet(
     input = cms.untracked.int32(1)
@@ -38,23 +39,6 @@ process.source = cms.Source("EmptySource")
 process.options = cms.untracked.PSet(
 
 )
-
-import FWCore.ParameterSet.VarParsing as VarParsing
-options = VarParsing.VarParsing()
-options.register('isPhase2',
-                 True, #default value
-                 VarParsing.VarParsing.multiplicity.singleton,
-                 VarParsing.VarParsing.varType.bool,
-                 "Phase2 electronics config flag")
-options.parseArguments()
-
-if options.isPhase2:
-	process.load('SimCalorimetry.EcalSimProducers.esCATIAGainProducer_cfi')
-else:
-	process.load('SimCalorimetry.EcalSimProducers.esGainProducer_cfi')
-
-process.load("SimCalorimetry.EcalSimProducers.ecalSimParameterMap_cff")
-process.ecalSimParameterMap.isPhase2  = options.isPhase2 
 
 # Production Info
 process.configurationMetadata = cms.untracked.PSet(
@@ -97,10 +81,12 @@ process.generator = cms.EDFilter("Pythia8PtGun",
         AddAntiParticle = cms.bool(True),
         MaxEta = cms.double(2.5),
         MaxPhi = cms.double(3.14159265359),
-        MaxPt = cms.double(10.01),
+        MaxPt = cms.double(300.01),
+	#MaxPt = cms.double(10.01),
         MinEta = cms.double(-2.5),
         MinPhi = cms.double(-3.14159265359),
-        MinPt = cms.double(9.99),
+        MinPt = cms.double(299.99),
+	#MinPt = cms.double(9.99),
         ParticleID = cms.vint32(11)
     ),
     PythiaParameters = cms.PSet(
@@ -138,16 +124,15 @@ process.ecalConditions = cms.ESSource("PoolDBESSource", CondDBSetup,
 )
 process.es_prefer_ecalPulseShape = cms.ESPrefer("PoolDBESSource","ecalConditions")
 
-if options.isPhase2:
-	process.EcalCATIAGainRatiosESProducer = cms.ESProducer(
-		"EcalCATIAGainRatiosESProducer",
-		ComponentName = cms.string('test')
-	)
-else:
-	process.EcalGainRatiosESProducer = cms.ESProducer(
-		"EcalGainRatiosESProducer",
-		ComponentName = cms.string('test')
-	)
+process.EcalCATIAGainRatiosESProducer = cms.ESProducer(
+	"EcalCATIAGainRatiosESProducer",
+	ComponentName = cms.string('testGainProducer')
+)
+
+process.EcalLiteDTUPedestalsESProducer = cms.ESProducer(
+	"EcalLiteDTUPedestalsESProducer",
+	ComponentName = cms.string('testPedestalProducer')
+)
 
 #LOGGER:
 process.MessageLogger.cout = cms.untracked.PSet(
@@ -174,6 +159,7 @@ for path in process.paths:
 from Configuration.StandardSequences.earlyDeleteSettings_cff import customiseEarlyDelete
 process = customiseEarlyDelete(process)
 # End adding early deletion
+
 
 
 

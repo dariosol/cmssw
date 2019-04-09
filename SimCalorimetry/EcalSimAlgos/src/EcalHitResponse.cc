@@ -1,4 +1,3 @@
-
 #include "SimCalorimetry/EcalSimAlgos/interface/EcalHitResponse.h" 
 #include "SimCalorimetry/CaloSimAlgos/interface/CaloVSimParameterMap.h"
 #include "SimCalorimetry/CaloSimAlgos/interface/CaloSimParameters.h"
@@ -161,6 +160,7 @@ EcalHitResponse::add( const CaloSamples& hit )
       result[ bin ] += hit[ bin ] ;
     }
 
+  std::cout << "rsize: " << rsize << "  hit.size: " << hit.size() << "\n" << std::endl;  //Not printed. Function apparently never used
 }
 
 
@@ -240,21 +240,26 @@ EcalHitResponse::putAnalogSignal( const PCaloHit& hit, CLHEP::HepRandomEngine* e
 
 
    if (hit.energy() > 1.0) {
-
-     std::cout << "Hit Energy      : id " << hit.energy() << std::endl;
-     std::cout << "putAnalogSignal : id " << ebid.denseIndex() << std::endl;
-     std::cout <<" putAnalogSignal : rsize " <<rsize<< std::endl; 
+     //std::cout << "Hit Energy: " << hit.energy() << "\n" << std::endl;
+     //std::cout << "putAnalogSignal : id " << ebid.denseIndex() << std::endl;
+     //std::cout <<" putAnalogSignal : rsize " <<rsize<< std::endl; 
 
    for( unsigned int bin ( 0 ) ; bin != rsize ; ++bin )
    {
       result[ bin ] += (*shape())( binTime )*signal ;
-      std::cout << binTime<< " " << (*shape())( binTime ) << " " << signal<< std::endl;
-      binTime += BUNCHSPACE/4 ; // SA bovinamente ... funzionera' ?
-      //binTime += BUNCHSPACE;
+      //if(int(detId)==838957389){
+      //if(int(detId)==838891158){
+      //std::cout << "time to rise: " << shape()->timeToRise() << std::endl;
+      //std::cout << "result: " << result[bin] << std::endl;
+      //std::cout << "binTime: " << binTime << std::endl;
+      //std::cout << "signal: " << signal << "\n" << std::endl;
+      //std::cout << "detID: " << int(detId) << " " << binTime<< " " << result[bin] << " " << hit.energy() << " " << hit.time()<< "\n" << std::endl;}
+      binTime += BUNCHSPACE/4 ;
+
    }
 
    
-   std::cout << "putAnalogSignal: done filling signal for id " << ebid.denseIndex() << std::endl;
+   //std::cout << "putAnalogSignal: done filling signal for id " << ebid.denseIndex() << std::endl;
    }
 }
 

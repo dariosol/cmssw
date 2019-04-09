@@ -31,16 +31,16 @@ EcalCATIAGainRatiosESProducer::EcalCATIAGainRatiosESProducer(const edm::Paramete
   pset_(iConfig) {
   //the following line is needed to tell the framework what
   // data is being produced
-  std::cout<<"*********Creating EcalCATIAGainRatiosESProducer"<<std::endl;
+  //std::cout<<"*********Creating EcalCATIAGainRatiosESProducer"<<std::endl;
   setWhatProduced(this);
 }
 ////
 EcalCATIAGainRatiosESProducer::ReturnType
 EcalCATIAGainRatiosESProducer::produce(const EcalCATIAGainRatiosRcd& iRecord){
-  std::cout<<"********Starting Production"<<std::endl;
+  //std::cout<<"********Starting Production"<<std::endl;
   auto prod = std::make_shared<EcalCATIAGainRatios>();
 
-  std::cout<<"**********Set EB Values "<<std::endl;
+  //std::cout<<"**********Set EB Values "<<std::endl;
 
   for (int iChannel = 0; iChannel < kEBChannels; iChannel++) {
     EBDetId myEBDetId = EBDetId::unhashIndex(iChannel);
@@ -48,7 +48,7 @@ EcalCATIAGainRatiosESProducer::produce(const EcalCATIAGainRatiosRcd& iRecord){
     prod->setValue(myEBDetId.rawId(), val);
   }
 
-  std::cout<<"**********Set EE Values "<<std::endl;
+  //std::cout<<"**********Set EE Values "<<std::endl;
 
   for (int iChannel = 0; iChannel < kEEChannels; iChannel++) {
     EEDetId myEEDetId = EEDetId::unhashIndex(iChannel);     
@@ -59,9 +59,9 @@ EcalCATIAGainRatiosESProducer::produce(const EcalCATIAGainRatiosRcd& iRecord){
   
   
   
-  std::cout<<prod->size()<<std::endl;
+  //std::cout<<prod->size()<<std::endl;
  
-  std::cout<<"***********Returning"<<std::endl;
+  //std::cout<<"***********Returning"<<std::endl;
   return prod;
 }
 
