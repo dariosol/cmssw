@@ -5,6 +5,9 @@
 #include "SimCalorimetry/EcalSimAlgos/interface/EcalHitResponse.h"
 #include "CondFormats/EcalObjects/interface/EcalIntercalibConstantsMC.h"
 
+#include "CondFormats/EcalObjects/interface/EcalConstants.h"
+
+
 class APDSimParameters ;
 
 namespace CLHEP {
@@ -15,7 +18,7 @@ class EBHitResponse : public EcalHitResponse
 {
    public:
 
-      typedef CaloTSamples<float,10> EBSamples ;
+  typedef CaloTSamples<float,ecalPh2::sampleSize> EBSamples ;
 
       typedef std::vector<double> VecD ;
 

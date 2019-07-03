@@ -3,12 +3,13 @@
 
 #include "CalibFormats/CaloObjects/interface/CaloTSamples.h"
 #include "SimCalorimetry/EcalSimAlgos/interface/EcalHitResponse.h"
+#include "CondFormats/EcalObjects/interface/EcalConstants.h"
 
 class EEHitResponse : public EcalHitResponse
 {
    public:
 
-      typedef CaloTSamples<float,10> EESamples ;
+  typedef CaloTSamples<float,ecalPh2::sampleSize> EESamples ;
 
       EEHitResponse( const CaloVSimParameterMap* parameterMap , 
 		     const CaloVShape*           shape          ) ;

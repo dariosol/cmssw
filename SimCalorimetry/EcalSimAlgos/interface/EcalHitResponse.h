@@ -36,7 +36,7 @@ class EcalHitResponse
 
       typedef std::unordered_map<uint32_t,double> CalibCache;
 
-      enum { BUNCHSPACE = 25 } ;
+      //enum { BUNCHSPACE = 25 } ;
 
       EcalHitResponse( const CaloVSimParameterMap* parameterMap ,
 		       const CaloVShape*           shape          ) ;

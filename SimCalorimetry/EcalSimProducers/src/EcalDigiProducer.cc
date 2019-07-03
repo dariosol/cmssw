@@ -186,16 +186,22 @@ EcalDigiProducer::EcalDigiProducer( const edm::ParameterSet& params,  edm::Consu
   // mixMod.produces<EBDigiCollection>(m_EBdigiCollection);
   // mixMod.produces<EEDigiCollection>(m_EEdigiCollection);
   // mixMod.produces<ESDigiCollection>(m_ESdigiCollection);
+  std::cout<<"[EcalDigiProducer] Constructing producer"<<     "frameSize: " <<  m_readoutFrameSize<< std::endl;
    if ( m_doEB ) iC.consumes<std::vector<PCaloHit> >(edm::InputTag(m_hitsProducerTag, "EcalHitsEB"));   
    if ( m_doEE ) iC.consumes<std::vector<PCaloHit> >(edm::InputTag(m_hitsProducerTag, "EcalHitsEE"));
    if ( m_doES ) iC.consumes<std::vector<PCaloHit> >(edm::InputTag(m_hitsProducerTag, "EcalHitsES"));
 
-   const std::vector<double> ebCorMatG12 = params.getParameter< std::vector<double> >("EBCorrNoiseMatrixG12");
-   const std::vector<double> eeCorMatG12 = params.getParameter< std::vector<double> >("EECorrNoiseMatrixG12");
-   const std::vector<double> ebCorMatG06 = params.getParameter< std::vector<double> >("EBCorrNoiseMatrixG06");
-   const std::vector<double> eeCorMatG06 = params.getParameter< std::vector<double> >("EECorrNoiseMatrixG06");
-   const std::vector<double> ebCorMatG01 = params.getParameter< std::vector<double> >("EBCorrNoiseMatrixG01");
-   const std::vector<double> eeCorMatG01 = params.getParameter< std::vector<double> >("EECorrNoiseMatrixG01");
+   // const std::vector<double> ebCorMatG12 = params.getParameter< std::vector<double> >("EBCorrNoiseMatrixG12");
+   // const std::vector<double> eeCorMatG12 = params.getParameter< std::vector<double> >("EECorrNoiseMatrixG12");
+   // const std::vector<double> ebCorMatG06 = params.getParameter< std::vector<double> >("EBCorrNoiseMatrixG06");
+   // const std::vector<double> eeCorMatG06 = params.getParameter< std::vector<double> >("EECorrNoiseMatrixG06");
+   // const std::vector<double> ebCorMatG01 = params.getParameter< std::vector<double> >("EBCorrNoiseMatrixG01");
+   // const std::vector<double> eeCorMatG01 = params.getParameter< std::vector<double> >("EECorrNoiseMatrixG01");
+
+   const std::vector<double> ebCorMatG10Ph2 = params.getParameter< std::vector<double> >("EBCorrNoiseMatrixG10Ph2");
+   const std::vector<double> eeCorMatG10Ph2 = params.getParameter< std::vector<double> >("EECorrNoiseMatrixG10Ph2");
+   const std::vector<double> ebCorMatG01Ph2 = params.getParameter< std::vector<double> >("EBCorrNoiseMatrixG01Ph2");
+   const std::vector<double> eeCorMatG01Ph2 = params.getParameter< std::vector<double> >("EECorrNoiseMatrixG01Ph2");
 
    const bool applyConstantTerm          = params.getParameter<bool>       ("applyConstantTerm");
    const double rmsConstantTerm          = params.getParameter<double>     ("ConstantTerm");
@@ -216,20 +222,31 @@ EcalDigiProducer::EcalDigiProducer( const edm::ParameterSet& params,  edm::Consu
    EcalCorrMatrix ebMatrix[ 3 ] ;
    EcalCorrMatrix eeMatrix[ 3 ] ;
 
-   assert( ebCorMatG12.size() == m_readoutFrameSize ) ;
-   assert( eeCorMatG12.size() == m_readoutFrameSize ) ;
-   assert( ebCorMatG06.size() == m_readoutFrameSize ) ;
-   assert( eeCorMatG06.size() == m_readoutFrameSize ) ;
-   assert( ebCorMatG01.size() == m_readoutFrameSize ) ;
-   assert( eeCorMatG01.size() == m_readoutFrameSize ) ;
+   // assert( ebCorMatG12.size() == m_readoutFrameSize ) ;
+   // assert( eeCorMatG12.size() == m_readoutFrameSize ) ;
+   // assert( ebCorMatG06.size() == m_readoutFrameSize ) ;
+   // assert( eeCorMatG06.size() == m_readoutFrameSize ) ;
+   // assert( ebCorMatG01.size() == m_readoutFrameSize ) ;
+   // assert( eeCorMatG01.size() == m_readoutFrameSize ) ;
+   std::cout<<"[EcalDigiProducer] Check size10: "<<ebCorMatG10Ph2.size()<<std::endl;
+   std::cout<<"[EcalDigiProducer] Check size01: "<<ebCorMatG01Ph2.size()<<std::endl;
+   assert( ebCorMatG10Ph2.size() == m_readoutFrameSize ) ;
+   assert( eeCorMatG10Ph2.size() == m_readoutFrameSize ) ;
+   assert( ebCorMatG01Ph2.size() == m_readoutFrameSize ) ;
+   assert( eeCorMatG01Ph2.size() == m_readoutFrameSize ) ;
 
-   assert( 1.e-7 > fabs( ebCorMatG12[0] - 1.0 ) ) ;
-   assert( 1.e-7 > fabs( ebCorMatG06[0] - 1.0 ) ) ;
-   assert( 1.e-7 > fabs( ebCorMatG01[0] - 1.0 ) ) ;
-   assert( 1.e-7 > fabs( eeCorMatG12[0] - 1.0 ) ) ;
-   assert( 1.e-7 > fabs( eeCorMatG06[0] - 1.0 ) ) ;
-   assert( 1.e-7 > fabs( eeCorMatG01[0] - 1.0 ) ) ;
-
+   // assert(1.e-7 > fabs(ebCorMatG12[0] - 1.0));
+   // assert(1.e-7 > fabs(ebCorMatG06[0] - 1.0));
+   // assert(1.e-7 > fabs(ebCorMatG01[0] - 1.0));
+   // assert(1.e-7 > fabs(eeCorMatG12[0] - 1.0));
+   // assert(1.e-7 > fabs(eeCorMatG06[0] - 1.0));
+   // assert(1.e-7 > fabs(eeCorMatG01[0] - 1.0));
+   std::cout<<"[EcalDigiProducer] Check Cor Mat consistency"<<std::endl;
+   assert( 1.e-7 > fabs( ebCorMatG10Ph2[0] - 1.0 ) ) ;
+   assert( 1.e-7 > fabs( ebCorMatG01Ph2[0] - 1.0 ) ) ;
+   assert( 1.e-7 > fabs( eeCorMatG10Ph2[0] - 1.0 ) ) ;
+   assert( 1.e-7 > fabs( eeCorMatG01Ph2[0] - 1.0 ) ) ;
+   /*
    for ( unsigned int row ( 0 ) ; row != m_readoutFrameSize ; ++row )
    {
       assert( 0 == row || 1. >= ebCorMatG12[row] ) ;
@@ -249,14 +266,44 @@ EcalDigiProducer::EcalDigiProducer( const edm::ParameterSet& params,  edm::Consu
 	 eeMatrix[2]( row, column ) = eeCorMatG01[ index ] ;
       }
    }
-			  
+   */
+   std::cout<<"[EcalDigiProducer] Check row of cor and col mat"<<std::endl;
+   for ( unsigned int row ( 0 ) ; row != m_readoutFrameSize ; ++row )
+   {
+      assert( 0 == row || 1. >= ebCorMatG10Ph2[row] ) ;
+      assert( 0 == row || 1. >= ebCorMatG01Ph2[row] ) ;
+      assert( 0 == row || 1. >= eeCorMatG10Ph2[row] ) ;
+      assert( 0 == row || 1. >= eeCorMatG01Ph2[row] ) ;
+      std::cout<<"row "<<row<<std::endl;
+
+      for ( unsigned int column ( 0 ) ; column <= row ; ++column )
+      {
+	 const unsigned int index ( row - column ) ;
+
+	 ebMatrix[0]( row, column ) = ebCorMatG10Ph2[ index ] ;
+	 eeMatrix[0]( row, column ) = eeCorMatG10Ph2[ index ] ;
+	 std::cout<<"col mat0: "<<column<<std::endl;
+	 ebMatrix[1]( row, column ) = ebCorMatG01Ph2[ index ] ;
+	 eeMatrix[1]( row, column ) = eeCorMatG01Ph2[ index ] ;
+	 std::cout<<"col mat1 "<<column<<std::endl;
+      }
+   }
+   /*			  
    m_EBCorrNoise[0].reset( new CorrelatedNoisifier<EcalCorrMatrix>( ebMatrix[0] ) );
    m_EECorrNoise[0].reset( new CorrelatedNoisifier<EcalCorrMatrix>( eeMatrix[0] ) );
    m_EBCorrNoise[1].reset( new CorrelatedNoisifier<EcalCorrMatrix>( ebMatrix[1] ) );
    m_EECorrNoise[1].reset( new CorrelatedNoisifier<EcalCorrMatrix>( eeMatrix[1] ) );
    m_EBCorrNoise[2].reset( new CorrelatedNoisifier<EcalCorrMatrix>( ebMatrix[2] ) );
    m_EECorrNoise[2].reset( new CorrelatedNoisifier<EcalCorrMatrix>( eeMatrix[2] ) );
+   */
+   std::cout<<"[EcalDigiProducer] Reset"<<std::endl;
+   m_EBCorrNoise[0].reset( new CorrelatedNoisifier<EcalCorrMatrix>( ebMatrix[0] ) );
+   m_EECorrNoise[0].reset( new CorrelatedNoisifier<EcalCorrMatrix>( eeMatrix[0] ) );
+   m_EBCorrNoise[1].reset( new CorrelatedNoisifier<EcalCorrMatrix>( ebMatrix[1] ) );
+   m_EECorrNoise[1].reset( new CorrelatedNoisifier<EcalCorrMatrix>( eeMatrix[1] ) );
 
+
+   std::cout<<"[EcalDigiProducer] More reset"<<std::endl;
    m_Coder.reset( new EcalCoder( addNoise         , 
                                  m_PreMix1        ,
                                  m_EBCorrNoise[0].get() ,
@@ -284,7 +331,7 @@ EcalDigiProducer::EcalDigiProducer( const edm::ParameterSet& params,  edm::Consu
                                             m_APDElectronicsSim.get() ,
                                             false                 ) );
    }
-
+   std::cout<<"[EcalDigiProducer] Barrel and Endcap reset"<<std::endl;
    if( m_doEB ) {
      m_BarrelDigitizer.reset( new EBDigitizer( m_EBResponse.get()     , 
                                                m_ElectronicsSim.get() ,
@@ -296,6 +343,7 @@ EcalDigiProducer::EcalDigiProducer( const edm::ParameterSet& params,  edm::Consu
                                                m_ElectronicsSim.get() , 
                                                addNoise            ) );
    }
+   std::cout<<"[EcalDigiProducer] End constructor"<<std::endl;
 }
 
 
@@ -522,13 +570,8 @@ EcalDigiProducer::checkCalibrations(const edm::Event& event, const edm::EventSet
 
    
 
-   double theGains[m_Coder->NGAINS];
-   theGains[0] = 10. ;
-   theGains[1] = 1.;
-
-
    const double EBscale (
-      ( agc->getEBValue())*theGains[1]*(m_Coder->MAXADC)*m_EBs25notCont ) ;
+			 ( agc->getEBValue())*ecalPh2::gains[1]*(m_Coder->MAXADC)*m_EBs25notCont ) ;
 
    LogDebug("EcalDigi") << " GeV/ADC = " << agc->getEBValue() 
 			<< "\n" << " notCont = " << m_EBs25notCont 
@@ -536,7 +579,7 @@ EcalDigiProducer::checkCalibrations(const edm::Event& event, const edm::EventSet
 			<< ", " << m_EBs25notCont ;
 
    const double EEscale (
-      (agc->getEEValue())*theGains[1]*(m_Coder->MAXADC)*m_EEs25notCont ) ;
+			 (agc->getEEValue())*ecalPh2::gains[1]*(m_Coder->MAXADC)*m_EEs25notCont ) ;
 
    LogDebug("EcalDigi") << " GeV/ADC = " << agc->getEEValue() 
 			<< "\n" << " notCont = " << m_EEs25notCont 

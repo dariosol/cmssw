@@ -26,7 +26,7 @@ class EcalCoder
 {
    public:
 #warning hard coded sample size
-      typedef CaloTSamples<float,10> EcalSamples ;
+      typedef CaloTSamples<float,16> EcalSamples ;
       
       typedef CorrelatedNoisifier<EcalCorrMatrix> Noisifier ;
 

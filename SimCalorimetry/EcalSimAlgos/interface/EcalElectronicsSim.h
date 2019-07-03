@@ -23,7 +23,7 @@ class EcalElectronicsSim
 {
    public:
 
-      typedef CaloTSamples<float,10> EcalSamples ;
+      typedef CaloTSamples<float,16> EcalSamples ;
 
       EcalElectronicsSim( const EcalSimParameterMap* parameterMap      , 
 			  EcalCoder*                 coder             , 

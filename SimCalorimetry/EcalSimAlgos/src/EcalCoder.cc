@@ -4,6 +4,8 @@
 #include "DataFormats/EcalDigi/interface/EcalMGPASample.h"
 #include "DataFormats/EcalDigi/interface/EcalDataFrame.h"
 
+#include "CondFormats/EcalObjects/interface/EcalConstants.h"
+
 #include <iostream>
 
 //#include "Geometry/CaloGeometry/interface/CaloGenericDetId.h"
@@ -95,11 +97,11 @@ EcalCoder::encode( const EcalSamples& ecalSamples ,
   
 
    //N Gains set to 2 in the .h
-   double pedestals[NGAINS];
-   double widths[NGAINS];
-   float  gains[NGAINS];
-   double LSB[NGAINS];
-   double trueRMS[NGAINS];
+   double pedestals[ecalPh2::NGAINS];
+   double widths[ecalPh2::NGAINS];
+   //float  gains[ecalPh2::NGAINS];
+   double LSB[ecalPh2::NGAINS];
+   double trueRMS[ecalPh2::NGAINS];
 
 
    double icalconst = 1. ;
@@ -118,9 +120,9 @@ EcalCoder::encode( const EcalSamples& ecalSamples ,
       trueRMS[igain] = std::sqrt( std::fabs(widths[igain]*widths[igain] - 1./12.) ) ;
 
       // set nominal value first
-      findGains( detId , gains  );               
+      //findGains( detId , gains  );               
 
-      LSB[igain]= Emax/(MAXADC*gains[igain]);
+      LSB[igain]= Emax/(MAXADC*ecalPh2::gains[igain]);
       
 
    }
@@ -158,13 +160,10 @@ EcalCoder::encode( const EcalSamples& ecalSamples ,
 	 asignal = pedestals[igain] +
 	   ecalSamples[i] /( LSB[igain]*icalconst ) +
 	   trueRMS[igain]*noiseframe[igain][i]    ;
+	 //std::cout << "LSB GAIN 10: " << LSB[0] << std::endl;
 	 ////////////DEBUG
-	 // if(asignal==0.){
-	 //   std::cout << "pedestals[i] " << pedestals[igain] << "  ecalSamples[i]: " << ecalSamples[igain] << "  trueRMS[i]: " << trueRMS[igain]*noiseframe[igain][i] << std::endl;
-	 // }
-	 // std::cout << "sample " << i << "  asignal: " << asignal << std::endl;
-	 //////////////////
-             
+	 //if(int(detId)==838957389 && igain==1) std::cout << int(detId) << "  pedestal: " << pedestals[igain] << "  ecalSamples: " << ecalSamples[i] << "  LSB: " << LSB[igain] << " icalconst: " << icalconst << "  trueRMS: " << trueRMS[igain]*noiseframe[igain][i] << "\n" << std::endl;
+	 //if(int(detId)==838891158 && igain==0) std::cout << int(detId) << "  pedestal: " << pedestals[igain] << "  ecalSamples: " << ecalSamples[i] << "  LSB: " << LSB[igain] << " icalconst: " << icalconst << "  trueRMS: " << trueRMS[igain]*noiseframe[igain][i] << "\n" << std::endl;
        } else {
 	 //  no noise nor pedestal when premixing
 	 asignal = ecalSamples[i] /( LSB[igain]*icalconst ) ;
@@ -179,7 +178,7 @@ EcalCoder::encode( const EcalSamples& ecalSamples ,
        //DEBUG
        //if(igain==0 && adc>=140.) std::cout << int(detId) << "  asignal: "<< asignal << "  sample " << i << "  adc: " << adc << "\n" << std::endl;
        //if(adc>=500. && igain==1) std::cout << int(detId) << "  sample " << i << "  adc: " << adc << "\n" << std::endl;
-       //if(int(detId)==838957389 && igain==1) std::cout << int(detId) << "  sample " << i << "  adc: " << adc << "\n" << std::endl;
+       //if(int(detId)==838957389 && igain==1) std::cout << int(detId) << "  sample " << i << "  ecalSamples: " << ecalSamples[i] << "  adc: " << adc << "\n" << std::endl;
        //if(int(detId)==838891158) std::cout << int(detId) << "  sample " << i << "  adc: " << adc << "\n" << std::endl;
        
        if (isSaturated[0] && igain==0) break; // gain 0 (x10) channel is saturated, readout will use gain 1 (x1)
@@ -242,20 +241,20 @@ EcalCoder::findPedestal( const DetId & detId  ,
 }
 
 
-void 
-EcalCoder::findGains( const DetId & detId , float Gains[]        ) const
-{
+// void 
+// EcalCoder::findGains( const DetId & detId , float Gains[]        ) const
+// {
 
-   EcalCATIAGainRatioMap::const_iterator grit = m_gainRatios->getMap().find( detId );
-   Gains[1] = 1.;
-   Gains[0] = Gains[1]*(*grit);
+//    EcalCATIAGainRatioMap::const_iterator grit = m_gainRatios->getMap().find( detId );
+//    Gains[1] = 1.;
+//    Gains[0] = Gains[1]*(*grit);
   
-   if ( (detId.subdetId() != EcalBarrel) && (detId.subdetId() != EcalEndcap) ) 
-   { 
-      edm::LogError("EcalCoder") << "Could not find gain ratios for " << detId.rawId() << " among the " << m_gainRatios->getMap().size();
-   }   
+//    if ( (detId.subdetId() != EcalBarrel) && (detId.subdetId() != EcalEndcap) ) 
+//    { 
+//       edm::LogError("EcalCoder") << "Could not find gain ratios for " << detId.rawId() << " among the " << m_gainRatios->getMap().size();
+//    }   
   
-}
+// }
 
 void 
 EcalCoder::findIntercalibConstant( const DetId& detId, 

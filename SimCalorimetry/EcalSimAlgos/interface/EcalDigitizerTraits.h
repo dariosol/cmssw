@@ -23,7 +23,7 @@ class EBDigitizerTraits
       /// the electronics simulation
       typedef EcalElectronicsSim ElectronicsSim;
 
-      typedef CaloTSamples<float,10> EcalSamples ;
+      typedef CaloTSamples<float,16> EcalSamples ;
 
       static void fix( Digi& digi, edm::DataFrame df ) {};
 };
@@ -38,7 +38,7 @@ class EEDigitizerTraits
       /// the electronics simulation
       typedef EcalElectronicsSim ElectronicsSim;
 
-      typedef CaloTSamples<float,10> EcalSamples ;
+      typedef CaloTSamples<float,16> EcalSamples ;
 
       static void fix( Digi& digi, edm::DataFrame df ) {}
 };

@@ -12,6 +12,10 @@
 #include "FWCore/Utilities/interface/isFinite.h"
 #include "FWCore/Utilities/interface/Exception.h"
 
+#include "CondFormats/EcalObjects/interface/EcalConstants.h"
+
+
+using namespace ecalPh2;
 
 EBHitResponse::EBHitResponse( const CaloVSimParameterMap* parameterMap , 
 			      const CaloVShape*           shape        ,
