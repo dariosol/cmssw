@@ -23,7 +23,6 @@
 #include "CondFormats/EcalObjects/interface/EcalConstants.h"
 
 
-//using namespace ecalPh2;
 
 EcalHitResponse::EcalHitResponse( const CaloVSimParameterMap* parameterMap ,
 				  const CaloVShape*           shape         ) :
@@ -221,7 +220,7 @@ EcalHitResponse::putAnalogSignal( const PCaloHit& hit, CLHEP::HepRandomEngine* e
 
    const CaloSimParameters* parameters ( params( detId ) ) ;
    
-   const double signal ( analogSignalAmplitude( detId, hit.energy(), engine ) ) ;
+   const double signal ( analogSignalAmplitude( detId, hit.energy(), engine ) ) ; //Signal amplitude in number of photoelectrons (npe)
 
    double time = hit.time();
 
@@ -234,9 +233,7 @@ EcalHitResponse::putAnalogSignal( const PCaloHit& hit, CLHEP::HepRandomEngine* e
    const double tzero = ( shape()->timeToRise()
 			  + parameters->timePhase() 
 			  - jitter
-              //- BUNCHSPACE*( parameters->binOfMaximum()            
-			  - ecalPh2::BUNCHSPACE*( parameters->binOfMaximum()
-					 - m_phaseShift             ) ) ;
+			  - ecalPh2::BUNCHSPACE*( parameters->binOfMaximum() - m_phaseShift ) ) ;
    double binTime ( tzero ) ;
 
    EcalSamples& result ( *findSignal( detId ) ) ;
@@ -245,43 +242,15 @@ EcalHitResponse::putAnalogSignal( const PCaloHit& hit, CLHEP::HepRandomEngine* e
 
    EBDetId ebid(detId);
 
-   if(rsize != 10){
-     std::cout << "rsize DIVERSO DA 10. rsize = " << rsize << "   hit energy: " << hit.energy() << "   detId: " << ebid << std::endl;
+   if (hit.energy() > 1.0){
+
+     for( unsigned int bin ( 0 ) ; bin != rsize ; ++bin ){
+       
+       result[ bin ] += (*shape())( binTime )*signal ;
+
+       binTime += ecalPh2::BUNCHSPACE;
+     }
    }
-
-
-   if (hit.energy() > 1.0) {
-     //std::cout << "Hit Energy: " << hit.energy() << "\n" << std::endl;
-     //std::cout << "putAnalogSignal : id " << ebid.denseIndex() << std::endl;
-     //std::cout <<" putAnalogSignal : rsize " <<rsize<< std::endl; 
-     std::cout << "A NEW LOOP" << std::endl;
-
-   for( unsigned int bin ( 0 ) ; bin != rsize ; ++bin )
-   {
-     result[ bin ] += (*shape())( binTime )*signal ;
-     //if(int(detId)==838957389){
-     //if(int(detId)==838891158){
-       //std::cout << "time to rise: " << shape()->timeToRise() << std::endl;
-       //std::cout << "result: " << result[bin] << std::endl;
-       //std::cout << "binTime: " << binTime << std::endl;
-       //std::cout << "signal: " << signal << "\n" << std::endl;
-       //std::cout << "detID: " << int(detId) << "  shape(bintime): " << (*shape())( binTime ) << " " << binTime<< " " << result[bin] << " " << hit.energy() << " " << hit.time()<< "\n" << std::endl;}
-     binTime += ecalPh2::BUNCHSPACE;
-     std::cout << "rsize inside loop: " << rsize << std::endl;
-
-     //std::cout << "Ph2 BUNCHSPACE: " << ecalPh2::BUNCHSPACE << std::endl;
-     
-   }
-   std::cout << " " << std::endl;
-   //std::cout << "putAnalogSignal: done filling signal for id " << ebid.denseIndex() << std::endl;
-   }
-
-   // if(int(detId)==838957389){
-   //   for( int i=0 ; i<10; ++i ){
-   //     std::cout << i << "  result: " << result[i] << "\n" << std::endl;
-   //   }
-   // } 
-   
 }
 
 double
@@ -296,11 +265,7 @@ EcalHitResponse::findSignal( const DetId& detId )
 {
    const unsigned int di ( CaloGenericDetId( detId ).denseIndex() ) ;
    EcalSamples* result ( vSamAll( di ) ) ;
-   for(unsigned int i (0); i != result->size(); ++i){
-     std::cout << "di: " << di << "   vSamAll(di): " << vSamAll(di) << "   result size: " << result->size() << "    result[" << i+1 << "]: " << &result[i] << std::endl;
-     //std::cout << "di: " << di << "   vSamAll(di): " << vSamAll(di) << "   result size: " << result->size() << "    result[" << i+1 << "]: " << std::endl;//result[0] << std::endl;
-   }
-   std::cout << " " << std::endl;
+
    if( result->zero() ) m_index.push_back( di ) ;
    return result ;
 }
@@ -326,16 +291,11 @@ EcalHitResponse::analogSignalAmplitude( const DetId& detId, double energy, CLHEP
 
    double npe ( energy*lasercalib*parameters.simHitToPhotoelectrons( detId ) ) ;
 
-   // do we need to doPoisson statistics for the photoelectrons?
+   // do we need to doPoisson statistics for the photoelectrons? Yes, otherwise we just get the "mean value"
    if( parameters.doPhotostatistics() ) {
      npe = CLHEP::RandPoissonQ::shoot(engine, npe);
    }
    if( nullptr != m_PECorrection ) npe = m_PECorrection->correctPE( detId, npe, engine ) ;
-
-   //if(int(detId)==838957389){
-     //if(int(detId)==838891158){
-     //std::cout << "energy: " << energy << "  conversion: " << lasercalib*parameters.simHitToPhotoelectrons( detId ) << "  npe: " << npe << "\n" << std::endl;
-   //}
 
    return npe ;
 }
