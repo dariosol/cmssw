@@ -157,13 +157,8 @@ EcalCoder::encode( const EcalSamples& ecalSamples ,
        double asignal =0;
       
        if (!m_PreMix1) {
-	 asignal = pedestals[igain] +
-	   ecalSamples[i] /( LSB[igain]*icalconst ) +
-	   trueRMS[igain]*noiseframe[igain][i]    ;
-	 //std::cout << "LSB GAIN 10: " << LSB[0] << std::endl;
-	 ////////////DEBUG
-	 //if(int(detId)==838957389 && igain==1) std::cout << int(detId) << "  pedestal: " << pedestals[igain] << "  ecalSamples: " << ecalSamples[i] << "  LSB: " << LSB[igain] << " icalconst: " << icalconst << "  trueRMS: " << trueRMS[igain]*noiseframe[igain][i] << "\n" << std::endl;
-	 //if(int(detId)==838891158 && igain==0) std::cout << int(detId) << "  pedestal: " << pedestals[igain] << "  ecalSamples: " << ecalSamples[i] << "  LSB: " << LSB[igain] << " icalconst: " << icalconst << "  trueRMS: " << trueRMS[igain]*noiseframe[igain][i] << "\n" << std::endl;
+	 asignal = pedestals[igain] +  ecalSamples[i]/( LSB[igain]*icalconst ) + trueRMS[igain]*noiseframe[igain][i]; //Analog signal value for each sample in ADC. It is corrected by the intercalibration constants
+
        } else {
 	 //  no noise nor pedestal when premixing
 	 asignal = ecalSamples[i] /( LSB[igain]*icalconst ) ;
@@ -175,33 +170,10 @@ EcalCoder::encode( const EcalSamples& ecalSamples ,
 	 adc = MAXADC;
 	 isSaturated[igain] = true;
        }
-       //DEBUG
-       //if(igain==0 && adc>=140.) std::cout << int(detId) << "  asignal: "<< asignal << "  sample " << i << "  adc: " << adc << "\n" << std::endl;
-       //if(adc>=500. && igain==1) std::cout << int(detId) << "  sample " << i << "  adc: " << adc << "\n" << std::endl;
-       //if(int(detId)==838957389 && igain==1) std::cout << int(detId) << "  sample " << i << "  ecalSamples: " << ecalSamples[i] << "  adc: " << adc << "\n" << std::endl;
-       //if(int(detId)==838891158) std::cout << int(detId) << "  sample " << i << "  adc: " << adc << "\n" << std::endl;
        
        if (isSaturated[0] && igain==0) break; // gain 0 (x10) channel is saturated, readout will use gain 1 (x1)
        else adctrace[i] = adc;
        
-       //DEBUG
-       //if(ecalSamples[i] > 0) {
-       	 //std::cout<<"NGAIN "<<igain<<std::endl;
-       	 //std::cout<<"icalconst "<<icalconst<<std::endl;
-       	 //std::cout<<"Emax "<<Emax<<std::endl;
-
-       	 // for(int j = 0; j < 2; ++j) {
-       	 //   std::cout<<"index "<<j<<" pedestals "<<pedestals[j]<<std::endl;
-       	 //   std::cout<<"index "<<j<<" widths "<<widths[j]<<std::endl;
-       	 // }
-	 
-       	 //std::cout<<"trueRMS "<<trueRMS[igain]<<std::endl;
-       	 //std::cout<<"LSB Gain "<<igain<<" "<<LSB[igain]<<"\n";
-       	 //std::cout<<"Sample " <<i<< " NoiseFrame: " << noiseframe[igain][i] <<"\n";
-       	 //std::cout<<"Sample " <<i<< " Analog Samples: " << ecalSamples[i] <<"\n";
-       	 //std::cout<<"Sample " <<i<< " ADC: " << (unsigned int)adc <<"\n";
-
-	 //}//END DEBUG 
      } // for adc
    
      if (!isSaturated[0]) break; //  gain 0 (x10) is not saturated, so don't bother with gain 1
