@@ -18,7 +18,7 @@ process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
 
 #input:
 process.source = cms.Source("PoolSource",
-                            fileNames = cms.untracked.vstring('file:///afs/cern.ch/user/d/dsoldi/work/CMS/CMSEcalComplete/CMSSW_10_3_1/src/SingleElectronPt10_pythia8_cfi_py_GEN_SIM_DIGI.root'),
+                            fileNames = cms.untracked.vstring('file:///afs/cern.ch/user/d/dsoldi/work/CMS/newCMSEcalComplete/CMSSW_10_3_1/src/SimCalorimetry/EcalSimProducers/test/SingleElectronPt10_pythia8_cfi_py_GEN_SIM_DIGI.root'),
 
                             )
 

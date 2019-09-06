@@ -160,7 +160,7 @@ PhaseIIAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
    Handle<EEDigiCollection> pDigiEE;
    iEvent.getByToken(digiTokenEE_,pDigiEE);
    
-   const int MAXSAMPLES=10; 
+   const int MAXSAMPLES=16; 
    std::vector<double> ebAnalogSignal ;
    std::vector<double> ebADCCounts ;
    std::vector<double> ebADCGains ;
@@ -171,8 +171,10 @@ PhaseIIAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
    for (EBDigiCollection::const_iterator pDigi=pDigiEB->begin(); pDigi!=pDigiEB->end(); ++pDigi) {
      EBDataFrame digi( *pDigi );
      int nrSamples = digi.size();
+     cout<<"NSamples found: "<<nrSamples<<endl;
+     
      EBDetId ebid = digi.id () ;
-
+     
      nDigis++;
      if (meEBDigiOccupancy_) meEBDigiOccupancy_->Fill( ebid.iphi(), ebid.ieta() ); 
 
@@ -203,7 +205,7 @@ for (int sample = 0 ; sample < nrSamples; ++sample)
           ebADCCounts[sample] = (thisSample&0xFFF);
           ebADCGains[sample]  = (thisSample&(0x3<<12));
           ebAnalogSignal[sample] = (ebADCCounts[sample]*gainConv_[(int)ebADCGains[sample]]*barrelADCtoGeV_);
-	  if((thisSample&0xfff)>250) {
+	  if((thisSample&0xfff)>1) {
 	  cout<<"Full data "<<thisSample<<endl;
 	  cout<<"Sample "<<sample<<" E: "<<(thisSample&0xfff)<<" gain: "<< (thisSample&(0x3<<12))<<" Analog "<<ebAnalogSignal[sample]<<endl;
 	    }
