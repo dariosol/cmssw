@@ -1,6 +1,6 @@
 void dumpProfile() {
   
- std::string fileName_ = "Profile_SM10.root";
+ std::string fileName_ = "data/Profile_SM10.root";
  TFile *shapeFile_ = TFile::Open(fileName_.c_str(),"old");
  TProfile* PROF_704 = (TProfile*) shapeFile_->Get("SHAPE_XTAL_704");
 

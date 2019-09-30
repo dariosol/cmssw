@@ -160,63 +160,85 @@ PhaseIIAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
    Handle<EEDigiCollection> pDigiEE;
    iEvent.getByToken(digiTokenEE_,pDigiEE);
    
-   const int MAXSAMPLES=10; 
+   const int MAXSAMPLES=16;//10; 
    std::vector<double> ebAnalogSignal ;
    std::vector<double> ebADCCounts ;
+   std::vector<double> ebADCGains_temp ;
    std::vector<double> ebADCGains ;
+
+
    ebAnalogSignal.reserve(EBDataFrame::MAXSAMPLES);
    ebADCCounts.reserve(EBDataFrame::MAXSAMPLES);
+   ebADCGains_temp.reserve(EBDataFrame::MAXSAMPLES);
    ebADCGains.reserve(EBDataFrame::MAXSAMPLES);
+
+
    int nDigis=0;
-   for (EBDigiCollection::const_iterator pDigi=pDigiEB->begin(); pDigi!=pDigiEB->end(); ++pDigi) {
-     EBDataFrame digi( *pDigi );
-     int nrSamples = digi.size();
-     EBDetId ebid = digi.id () ;
+   for (EBDigiCollection::const_iterator pDigi=pDigiEB->begin(); pDigi!=pDigiEB->end(); ++pDigi) 
+    {
+       EBDataFrame digi( *pDigi );
+       int nrSamples = digi.size();
+       //cout<<"NSamples found: "<<nrSamples<<endl;
+       EBDetId ebid = digi.id () ;
+       cout<<" Crystall ID "<<ebid<<endl;
+       nDigis++;//cout<<" nDigis aaaaaaa "<<nDigis<<endl;
+       if (meEBDigiOccupancy_) meEBDigiOccupancy_->Fill( ebid.iphi(), ebid.ieta() ); 
 
-     nDigis++;
-     if (meEBDigiOccupancy_) meEBDigiOccupancy_->Fill( ebid.iphi(), ebid.ieta() ); 
-
-     double Emax = 0. ;
-     int Pmax = 0 ;
-     double pedestalPreSample = 0.;
-     double pedestalPreSampleAnalog = 0.;
-     int countsAfterGainSwitch = -1;
-     double higherGain = 1.;
-     int higherGainSample = 0;
+       double Emax = 0. ;
+       int Pmax = 0 ;
+       double pedestalPreSample = 0.;
+       double pedestalPreSampleAnalog = 0.;
+       int countsAfterGainSwitch = -1;
+       double higherGain = 1.;
+       int higherGainSample = 0;
      
-     for (int sample = 0 ; sample < nrSamples; ++sample) {
-       ebAnalogSignal[sample] = 0.;
-       ebADCCounts[sample] = 0.;
-       ebADCGains[sample] = 0.;
-     }
-
-   double  gainConv_[2]={10,1};
-   // saturated channels
-   double barrelADCtoGeV_ = 0.048; //GeV
-
-
-     
-for (int sample = 0 ; sample < nrSamples; ++sample) 
+       for (int sample = 0 ; sample < nrSamples; ++sample) 
         {
+          ebAnalogSignal[sample] = 0.;
+          ebADCCounts[sample] = 0.;
+          ebADCGains_temp[sample] = 0.;
+          ebADCGains[sample] = 0.;
+        }
+
+      double  gainConv_[2]={10,1};
+      // saturated channels
+      double barrelADCtoGeV_ = 0.048; //GeV
+
+
+      
+      for (int sample = 0 ; sample < nrSamples; ++sample) 
+       {
 	  int thisSample = digi[sample];
 	  
           ebADCCounts[sample] = (thisSample&0xFFF);
-          ebADCGains[sample]  = (thisSample&(0x3<<12));
+          ebADCGains[sample]  = (thisSample&(0x3<<12))>>12;
           ebAnalogSignal[sample] = (ebADCCounts[sample]*gainConv_[(int)ebADCGains[sample]]*barrelADCtoGeV_);
-	  if((thisSample&0xfff)>250) {
-	  cout<<"Full data "<<thisSample<<endl;
-	  cout<<"Sample "<<sample<<" E: "<<(thisSample&0xfff)<<" gain: "<< (thisSample&(0x3<<12))<<" Analog "<<ebAnalogSignal[sample]<<endl;
-	    }
-          if (Emax < ebAnalogSignal[sample] ) {
-            Emax = ebAnalogSignal[sample] ;
-            Pmax = sample ;
-          }
-	}
- if(0==1)cout<<"P max "<<Pmax<<endl;
-   }//end digi
-   
-   
 
+          //cout<<"Sample "<<sample<<endl;
+          //cout<<"		Full data "<<thisSample<<endl;
+          //cout<<"		ebADCCounts "<<ebADCCounts[sample]<<endl;
+          //cout<<"		ebADCGains "<<ebADCGains[sample]<<endl;
+          //cout<<"		gainConv_ "<<gainConv_[(int)ebADCGains[sample]]<<endl;
+          //cout<<"		barrelADCtoGeV_ "<<barrelADCtoGeV_<<endl;
+          //cout<<"		ebAnalogSignal "<<ebAnalogSignal[sample]<<endl;
+
+        /*  if((thisSample&0xfff)>250) 
+           {
+	       cout<<"Full data "<<thisSample<<endl;
+	       cout<<"Sample "<<sample<<" E: "<<(thisSample&0xfff)<<" gain: "<< (thisSample&(0x3<<12))<<" Analog "<<ebAnalogSignal[sample]<<endl;
+          }*/ 
+
+          if(Emax < ebAnalogSignal[sample] ) 
+           {
+              Emax = ebAnalogSignal[sample] ;
+              Pmax = sample ;          
+           }
+
+      }
+  
+    if(0==1)cout<<"P max "<<Pmax<<endl;
+  }//end digi
+   
    
 }
 

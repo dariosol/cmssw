@@ -57,7 +57,7 @@ process.RECOSIMoutput = cms.OutputModule("PoolOutputModule",
         dataTier = cms.untracked.string('GEN-SIM-RAW'),
         filterName = cms.untracked.string('')
     ),
-    fileName = cms.untracked.string('SingleElectronPt10_pythia8_cfi_py_GEN_SIM_DIGI.root'),
+    fileName = cms.untracked.string('SingleElectronPt10_pythia8_cfi_py_GEN_SIM_DIGI_Pt10000.root'),
 #    outputCommands = process.RECOSIMEventContent.outputCommands,
     outputCommands = cms.untracked.vstring('keep *',
                         'drop *_mix_*_*'),
@@ -82,11 +82,11 @@ process.generator = cms.EDFilter("Pythia8PtGun",
         MaxEta = cms.double(2.5),
         MaxPhi = cms.double(3.14159265359),
         #MaxPt = cms.double(300.01),
-	MaxPt = cms.double(10.01),
+	MaxPt = cms.double(10000.01),
         MinEta = cms.double(-2.5),
         MinPhi = cms.double(-3.14159265359),
         #MinPt = cms.double(299.99),
-	MinPt = cms.double(9.99),
+	MinPt = cms.double(9999.99),
         ParticleID = cms.vint32(11)
     ),
     PythiaParameters = cms.PSet(
@@ -114,7 +114,9 @@ process.ecalConditions = cms.ESSource("PoolDBESSource", CondDBSetup,
       #connect = cms.string('frontier://FrontierProd/CMS_COND_31X_ECAL'),
       #connect = cms.string('oracle://cms_orcoff_prep/CMS_COND_ECAL'),
       #authpath = cms.string('/afs/cern.ch/cms/DB/conddb'),
-      connect = cms.string('sqlite_file:/afs/cern.ch/user/r/rselvati/work/private/ECALSim/CMSSW_10_3_1/src/SimCalorimetry/EcalSimProducers/test/simPulseShapePhaseII.db'),
+      #connect = cms.string('sqlite_file:/afs/cern.ch/user/r/rselvati/work/private/ECALSim/CMSSW_10_3_1/src/SimCalorimetry/EcalSimProducers/test/simPulseShapePhaseII.db'),
+      connect = cms.string('sqlite_file:/afs/cern.ch/work/j/jobereng/CMSSW_10_3_1/src/SimCalorimetry/EcalSimProducers/test/simPulseShapePhaseII.db'),
+
       toGet = cms.VPSet(         # overide Global Tag use EcalTBWeights_EBEE_offline
                   cms.PSet(
                       record = cms.string('EcalSimPulseShapeRcd') ,
