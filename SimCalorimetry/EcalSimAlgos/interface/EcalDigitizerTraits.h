@@ -12,7 +12,6 @@
 #include "DataFormats/EcalDigi/interface/EEDataFrame.h"
 
 #include "CondFormats/EcalObjects/interface/EcalConstants.h"
-
 class EcalHitResponse ;
 
 class EBDigitizerTraits 
@@ -25,7 +24,6 @@ class EBDigitizerTraits
       /// the electronics simulation
       typedef EcalElectronicsSim ElectronicsSim;
 
-      //typedef CaloTSamples<float,16> EcalSamples ;
       typedef CaloTSamples<float,ecalPh2::sampleSize> EcalSamples ;
 
       static void fix( Digi& digi, edm::DataFrame df ) {};
@@ -43,7 +41,6 @@ class EEDigitizerTraits
 
       //typedef CaloTSamples<float,16> EcalSamples ;
       typedef CaloTSamples<float,ecalPh2::sampleSize> EcalSamples ;
-
 
       static void fix( Digi& digi, edm::DataFrame df ) {}
 };

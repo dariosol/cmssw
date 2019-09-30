@@ -22,7 +22,9 @@
 class EcalDigiCollection : public edm::DataFrameContainer {
 public:
   typedef edm::DataFrameContainer::size_type size_type;
+
   static const size_type MAXSAMPLES = 16;//10
+
   explicit EcalDigiCollection(size_type istride=MAXSAMPLES, int isubdet=0)  : 
     edm::DataFrameContainer(istride, isubdet){}
   void swap(DataFrameContainer& other) {this->DataFrameContainer::swap(other);}

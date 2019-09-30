@@ -161,6 +161,7 @@ PhaseIIAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
    iEvent.getByToken(digiTokenEE_,pDigiEE);
    
    const int MAXSAMPLES=16;//10; 
+
    std::vector<double> ebAnalogSignal ;
    std::vector<double> ebADCCounts ;
    std::vector<double> ebADCGains_temp ;
@@ -174,13 +175,14 @@ PhaseIIAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
 
 
    int nDigis=0;
+
    for (EBDigiCollection::const_iterator pDigi=pDigiEB->begin(); pDigi!=pDigiEB->end(); ++pDigi) 
     {
        EBDataFrame digi( *pDigi );
        int nrSamples = digi.size();
-       //cout<<"NSamples found: "<<nrSamples<<endl;
+       cout<<"NSamples found: "<<nrSamples<<endl;
        EBDetId ebid = digi.id () ;
-       cout<<" Crystall ID "<<ebid<<endl;
+       //cout<<" Crystall ID "<<ebid<<endl;
        nDigis++;//cout<<" nDigis aaaaaaa "<<nDigis<<endl;
        if (meEBDigiOccupancy_) meEBDigiOccupancy_->Fill( ebid.iphi(), ebid.ieta() ); 
 
@@ -191,6 +193,7 @@ PhaseIIAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
        int countsAfterGainSwitch = -1;
        double higherGain = 1.;
        int higherGainSample = 0;
+
      
        for (int sample = 0 ; sample < nrSamples; ++sample) 
         {
