@@ -5,6 +5,8 @@
 #include "DataFormats/DetId/interface/DetId.h"
 #include "DataFormats/Common/interface/DataFrame.h"
 
+#include "CondFormats/EcalObjects/interface/EcalConstants.h"
+
 #define EcalMgpaBitwiseGain12 1
 #define EcalMgpaBitwiseGain6  2
 #define EcalMgpaBitwiseGain1  3
@@ -45,7 +47,7 @@ class EcalDataFrame {
   bool hasSwitchToGain6() const; 
   bool hasSwitchToGain1() const; 
   
-  static const int MAXSAMPLES = 10;
+  static const int MAXSAMPLES = 10; //ecalPh2::sampleSize; //That is 16
 
   edm::DataFrame const & frame() const { return m_data;}
   edm::DataFrame & frame() { return m_data;}

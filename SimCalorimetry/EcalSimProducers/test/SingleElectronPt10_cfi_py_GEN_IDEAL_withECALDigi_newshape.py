@@ -30,7 +30,7 @@ process.load('Configuration.StandardSequences.EndOfProcess_cff')
 process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_cff')
 
 process.maxEvents = cms.untracked.PSet(
-        input = cms.untracked.int32(10)
+        input = cms.untracked.int32(1)
 )
 
 # Input source
@@ -115,7 +115,6 @@ process.ecalConditions = cms.ESSource("PoolDBESSource", CondDBSetup,
       #connect = cms.string('oracle://cms_orcoff_prep/CMS_COND_ECAL'),
       #authpath = cms.string('/afs/cern.ch/cms/DB/conddb'),
       connect = cms.string('sqlite_file:/afs/cern.ch/user/r/rselvati/work/private/ECALSim/CMSSW_10_3_1/src/SimCalorimetry/EcalSimProducers/test/simPulseShapePhaseII.db'),
-      #connect = cms.string('sqlite_file:/afs/cern.ch/work/j/jobereng/CMSSW_10_3_1/src/SimCalorimetry/EcalSimProducers/test/simPulseShapePhaseII.db'),
 
       toGet = cms.VPSet(         # overide Global Tag use EcalTBWeights_EBEE_offline
                   cms.PSet(

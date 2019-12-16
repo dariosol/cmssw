@@ -3,6 +3,7 @@
 #include "CondFormats/EcalObjects/interface/EcalCondObjectContainer.h"
 #include "CondFormats/EcalObjects/interface/EcalCondTowerObjectContainer.h"
 #include "CondFormats/EcalObjects/interface/EcalPedestals.h"
+#include "CondFormats/EcalObjects/interface/EcalLiteDTUPedestals.h"
 #include "CondFormats/EcalObjects/interface/EcalWeightXtalGroups.h"
 #include "CondFormats/EcalObjects/interface/EcalXtalGroupId.h"
 #include "CondFormats/EcalObjects/interface/EcalTBWeights.h"
@@ -10,6 +11,7 @@
 #include "CondFormats/EcalObjects/interface/EcalSampleMask.h"
 #include "CondFormats/EcalObjects/interface/EcalADCToGeVConstant.h"
 #include "CondFormats/EcalObjects/interface/EcalGainRatios.h"
+#include "CondFormats/EcalObjects/interface/EcalCATIAGainRatios.h"
 #include "CondFormats/EcalObjects/interface/EcalMGPAGainRatio.h"
 #include "CondFormats/EcalObjects/interface/EcalIntercalibConstants.h"
 #include "CondFormats/EcalObjects/interface/EcalIntercalibConstantsMC.h"
@@ -93,6 +95,11 @@ namespace CondFormats_EcalObjects {
     EcalContainer<EEDetId,EcalPedestal> ec_eeDetId_ecalPedestal;
     EcalContainer<EBDetId,EcalPedestal> ec_ebDetId_ecalPedestal;
     EcalCondObjectContainer<EcalPedestal> pedmap; //typedef EcalPedestals
+
+    std::vector<EcalLiteDTUPed> v_ecalDTUPed;
+    EcalContainer<EEDetId,EcalLiteDTUPed> ec_eeDetId_ecalLiteDTUPed;
+    EcalContainer<EBDetId,EcalLiteDTUPed> ec_ebDetId_ecalLiteDTUPed;
+    EcalCondObjectContainer<EcalLiteDTUPed> pedmapDTU; //typedef EcalPedestals
 
     std::vector<EcalTPGCrystalStatusCode> v_ecalTPGCrystalStatusCode;
     EcalContainer<EEDetId,EcalTPGCrystalStatusCode> ec_eeDetId_ecalTPGCrystalStatusCode;

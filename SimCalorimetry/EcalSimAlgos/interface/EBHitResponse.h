@@ -19,6 +19,7 @@ class EBHitResponse : public EcalHitResponse
    public:
 
   typedef CaloTSamples<float,ecalPh2::sampleSize> EBSamples ;
+  //typedef CaloTSamples<float,10> EBSamples ;
 
       typedef std::vector<double> VecD ;
 

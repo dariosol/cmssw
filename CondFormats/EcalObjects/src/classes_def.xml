@@ -83,6 +83,17 @@
 </class>
 
 <!-- base class -->
+<class name="EcalLiteDTUPed"/>
+<!-- templates for EcalCondObjectContainer having the class as template parameter -->
+<class name="std::vector<EcalLiteDTUPed>"/>
+<class name="EcalContainer<EEDetId,EcalLiteDTUPed>"/>
+<class name="EcalContainer<EBDetId,EcalLiteDTUPed>"/>
+<class name="EcalCondObjectContainer<EcalLiteDTUPed>">
+   <field name = "eb_" mapping = "blob"/>
+   <field name = "ee_" mapping = "blob"/>
+</class>
+
+<!-- base class -->
 <class name="EcalTPGCrystalStatusCode"/>
 <!-- templates for EcalCondObjectContainer having the class as template parameter -->
 <class name="std::vector<EcalTPGCrystalStatusCode>"/>

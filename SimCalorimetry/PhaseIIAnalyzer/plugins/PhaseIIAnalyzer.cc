@@ -207,6 +207,10 @@ PhaseIIAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
       // saturated channels
       double barrelADCtoGeV_ = 0.048; //GeV
 
+      // EcalIntercalibConstantsMC* ical = 
+
+      // EcalIntercalibConstantMCMap &icalMap = 
+
 
       
       for (int sample = 0 ; sample < nrSamples; ++sample) 
