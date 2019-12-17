@@ -15,7 +15,6 @@
 #include "CondFormats/EcalObjects/interface/EcalLiteDTUPedestals.h"
 #include "CondFormats/DataRecord/interface/EcalLiteDTUPedestalsRcd.h"
 
-
 #include "CondFormats/EcalObjects/interface/EcalClusterEnergyCorrectionParameters.h"
 #include "CondFormats/DataRecord/interface/EcalClusterEnergyCorrectionParametersRcd.h"
 #include "CondFormats/EcalObjects/interface/EcalClusterEnergyUncertaintyParameters.h"
@@ -163,8 +162,8 @@
 #include "CondFormats/DataRecord/interface/EcalSimPulseShapeRcd.h"
 
 
-REGISTER_PLUGIN(EcalPedestalsRcd,EcalCondObjectContainer<EcalPedestal>); 
-//REGISTER_PLUGIN(EcalLiteDTUPedestalsRcd,EcalCondObjectContainer<EcalLiteDTUPed>); 
+REGISTER_PLUGIN(EcalPedestalsRcd,EcalCondObjectContainer<EcalPedestal>);
+REGISTER_PLUGIN(EcalLiteDTUPedestalsRcd,EcalCondObjectContainer<EcalLiteDTUPed>);
 REGISTER_PLUGIN(EcalWeightXtalGroupsRcd,EcalCondObjectContainer<EcalXtalGroupId>);
 REGISTER_PLUGIN(EcalTBWeightsRcd,EcalTBWeights);
 REGISTER_PLUGIN(EcalGainRatiosRcd,EcalCondObjectContainer<EcalMGPAGainRatio>);

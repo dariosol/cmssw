@@ -71,6 +71,7 @@ PAYLOAD_2XML_MODULE( pluginUtilities_payload2xml ){
   PAYLOAD_2XML_CLASS( EcalCondObjectContainer<EcalMGPAGainRatio> );
   PAYLOAD_2XML_CLASS( EcalCondObjectContainer<EcalMappingElement> );
   PAYLOAD_2XML_CLASS( EcalCondObjectContainer<EcalPedestal> );
+  PAYLOAD_2XML_CLASS( EcalCondObjectContainer<EcalLiteDTUPed> );
   PAYLOAD_2XML_CLASS( EcalCondObjectContainer<EcalPulseCovariance> );
   PAYLOAD_2XML_CLASS( EcalCondObjectContainer<EcalPulseShape> );
   PAYLOAD_2XML_CLASS( EcalCondObjectContainer<EcalPulseSymmCovariance> );

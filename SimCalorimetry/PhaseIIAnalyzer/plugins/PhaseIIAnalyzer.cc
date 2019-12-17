@@ -33,17 +33,23 @@
 #include "DataFormats/EcalDigi/interface/EcalDigiCollections.h"
 #include "CondFormats/EcalObjects/interface/EcalPedestals.h"
 #include "CondFormats/DataRecord/interface/EcalPedestalsRcd.h"
+<<<<<<< HEAD
 #include "CondFormats/EcalObjects/interface/EcalLiteDTUPedestals.h"
 #include "CondFormats/DataRecord/interface/EcalLiteDTUPedestalsRcd.h"
 #include "CondFormats/DataRecord/interface/EcalIntercalibConstantsMCRcd.h"
 #include "CondFormats/EcalObjects/interface/EcalIntercalibConstantsMC.h"
+=======
+
+#include "CondFormats/EcalObjects/interface/EcalLiteDTUPedestals.h"
+#include "CondFormats/DataRecord/interface/EcalLiteDTUPedestalsRcd.h"
+
+>>>>>>> 4772d78f700bb63bcc0ee9a3a0bd77b8e6c6a42b
 #include "PhaseIIAnalyzer.h"
 
 #include "DataFormats/EcalDetId/interface/EBDetId.h"
 #include "DataFormats/EcalDetId/interface/EEDetId.h"
 #include "FWCore/Framework/interface/ESHandle.h"
 #include "FWCore/Framework/interface/EventSetup.h"
-#include "CondFormats/DataRecord/interface/EcalPedestalsRcd.h"
 #include "SimDataFormats/CaloHit/interface/PCaloHit.h"
 
 #include "FWCore/ServiceRegistry/interface/Service.h"
@@ -186,7 +192,19 @@ PhaseIIAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
    ebADCGains_temp.reserve(EBDataFrame::MAXSAMPLES);
    ebADCGains.reserve(EBDataFrame::MAXSAMPLES);
 
-
+   //Take Pedestals:
+   edm::ESHandle<EcalLiteDTUPedestals> peds;
+   iSetup.get<EcalLiteDTUPedestalsRcd>().get(peds);
+   const EcalLiteDTUPedestals* myped = peds.product();
+    int cnt=0;
+  for( EcalLiteDTUPedestals::const_iterator it = myped->barrelItems().begin(); it != myped->barrelItems().end(); ++it)
+    {
+      std::cout << "EcalPedestal: " << " BARREL " << cnt << " "
+                << "  mean:  " <<(*it).mean(0) << " rms: " << (*it).rms(0);                
+      std::cout << std::endl;
+            ++cnt;
+    }
+  
    int nDigis=0;
 
    for (EBDigiCollection::const_iterator pDigi=pDigiEB->begin(); pDigi!=pDigiEB->end(); ++pDigi) 
@@ -228,6 +246,8 @@ PhaseIIAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
       
       for (int sample = 0 ; sample < nrSamples; ++sample) 
        {
+
+	 
 	  int thisSample = digi[sample];
 	  
           ebADCCounts[sample] = (thisSample&0xFFF);
