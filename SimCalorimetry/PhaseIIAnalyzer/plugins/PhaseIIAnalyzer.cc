@@ -33,17 +33,11 @@
 #include "DataFormats/EcalDigi/interface/EcalDigiCollections.h"
 #include "CondFormats/EcalObjects/interface/EcalPedestals.h"
 #include "CondFormats/DataRecord/interface/EcalPedestalsRcd.h"
-<<<<<<< HEAD
 #include "CondFormats/EcalObjects/interface/EcalLiteDTUPedestals.h"
 #include "CondFormats/DataRecord/interface/EcalLiteDTUPedestalsRcd.h"
 #include "CondFormats/DataRecord/interface/EcalIntercalibConstantsMCRcd.h"
 #include "CondFormats/EcalObjects/interface/EcalIntercalibConstantsMC.h"
-=======
 
-#include "CondFormats/EcalObjects/interface/EcalLiteDTUPedestals.h"
-#include "CondFormats/DataRecord/interface/EcalLiteDTUPedestalsRcd.h"
-
->>>>>>> 4772d78f700bb63bcc0ee9a3a0bd77b8e6c6a42b
 #include "PhaseIIAnalyzer.h"
 
 #include "DataFormats/EcalDetId/interface/EBDetId.h"
