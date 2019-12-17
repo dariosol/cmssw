@@ -33,6 +33,10 @@
 #include "DataFormats/EcalDigi/interface/EcalDigiCollections.h"
 #include "CondFormats/EcalObjects/interface/EcalPedestals.h"
 #include "CondFormats/DataRecord/interface/EcalPedestalsRcd.h"
+#include "CondFormats/EcalObjects/interface/EcalLiteDTUPedestals.h"
+#include "CondFormats/DataRecord/interface/EcalLiteDTUPedestalsRcd.h"
+#include "CondFormats/DataRecord/interface/EcalIntercalibConstantsMCRcd.h"
+#include "CondFormats/EcalObjects/interface/EcalIntercalibConstantsMC.h"
 #include "PhaseIIAnalyzer.h"
 
 #include "DataFormats/EcalDetId/interface/EBDetId.h"
@@ -159,6 +163,15 @@ PhaseIIAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
    
    Handle<EEDigiCollection> pDigiEE;
    iEvent.getByToken(digiTokenEE_,pDigiEE);
+
+   edm::ESHandle<EcalLiteDTUPedestals> peds;
+   iSetup.get<EcalLiteDTUPedestalsRcd>().get(peds);
+   const EcalLiteDTUPedestalsMap* DTUpeds_map = peds.product();
+   EcalLiteDTUPedestalsMap::const_iterator itped = DTUpeds_map->getMap().find(2);
+
+   cout << "mean dei piedistalli: " << (*itped).mean(0) << endl;
+   // edm::ESHandle<EcalIntercalibConstantsMC> peds;
+   // iSetup.get<EcalIntercalibConstantsMCRcd>().get(peds);
    
    const int MAXSAMPLES=16;//10; 
 

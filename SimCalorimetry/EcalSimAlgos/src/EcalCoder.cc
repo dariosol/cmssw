@@ -158,7 +158,6 @@ EcalCoder::encode( const EcalSamples& ecalSamples ,
       
        if (!m_PreMix1) {
 	 asignal = pedestals[igain] +  ecalSamples[i]/( LSB[igain]*icalconst ) + trueRMS[igain]*noiseframe[igain][i]; //Analog signal value for each sample in ADC. It is corrected by the intercalibration constants
-	 std::cout << "pedestals[igain]: " << pedestals[igain] << std::endl;
 		     
        } else {
 	 //  no noise nor pedestal when premixing

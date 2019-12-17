@@ -12,6 +12,8 @@
 
 #include "CondFormats/EcalObjects/interface/EcalPedestals.h"
 #include "CondFormats/DataRecord/interface/EcalPedestalsRcd.h"
+#include "CondFormats/EcalObjects/interface/EcalLiteDTUPedestals.h"
+#include "CondFormats/DataRecord/interface/EcalLiteDTUPedestalsRcd.h"
 
 
 #include "CondFormats/EcalObjects/interface/EcalClusterEnergyCorrectionParameters.h"
@@ -162,6 +164,7 @@
 
 
 REGISTER_PLUGIN(EcalPedestalsRcd,EcalCondObjectContainer<EcalPedestal>); 
+//REGISTER_PLUGIN(EcalLiteDTUPedestalsRcd,EcalCondObjectContainer<EcalLiteDTUPed>); 
 REGISTER_PLUGIN(EcalWeightXtalGroupsRcd,EcalCondObjectContainer<EcalXtalGroupId>);
 REGISTER_PLUGIN(EcalTBWeightsRcd,EcalTBWeights);
 REGISTER_PLUGIN(EcalGainRatiosRcd,EcalCondObjectContainer<EcalMGPAGainRatio>);
