@@ -38,13 +38,15 @@
 #include "CondFormats/EcalObjects/interface/EcalTPGPedestals.h"
 #include "CondFormats/DataRecord/interface/EcalTPGPedestalsRcd.h"
 
+#include "CondFormats/EcalObjects/interface/EcalConstants.h"
+
 #include <TTree.h>
 #include <TMath.h>
 
-const unsigned int EcalTrigPrimFunctionalAlgo::nrSamples_=5;  //to be written
-const unsigned int EcalTrigPrimFunctionalAlgo::maxNrSamplesOut_=10;  
-const unsigned int EcalTrigPrimFunctionalAlgo::maxNrTowers_=2448;
-const unsigned int EcalTrigPrimFunctionalAlgo::maxNrTPs_=2448; //FIXME??
+const unsigned int EcalTrigPrimFunctionalAlgo::nrSamples_= 5;  //to be written
+const unsigned int EcalTrigPrimFunctionalAlgo::maxNrSamplesOut_= ecalPh2::sampleSize;  
+const unsigned int EcalTrigPrimFunctionalAlgo::maxNrTowers_= 2448;
+const unsigned int EcalTrigPrimFunctionalAlgo::maxNrTPs_= 2448; //FIXME??
 
 //----------------------------------------------------------------------
 
@@ -53,7 +55,7 @@ EcalTrigPrimFunctionalAlgo::EcalTrigPrimFunctionalAlgo(const edm::EventSetup & s
 
 {
  if (famos_) maxNrSamples_=1;  //get from input??
- else maxNrSamples_=10;
+ else maxNrSamples_= ecalPh2::sampleSize;
  this->init(setup);
 }
 

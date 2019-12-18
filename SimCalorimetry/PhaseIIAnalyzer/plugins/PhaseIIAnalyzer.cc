@@ -164,15 +164,12 @@ PhaseIIAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
    Handle<EEDigiCollection> pDigiEE;
    iEvent.getByToken(digiTokenEE_,pDigiEE);
 
-   edm::ESHandle<EcalLiteDTUPedestals> peds;
-   iSetup.get<EcalLiteDTUPedestalsRcd>().get(peds);
-   const EcalLiteDTUPedestalsMap* DTUpeds_map = peds.product();
-   EcalLiteDTUPedestalsMap::const_iterator itped = DTUpeds_map->getMap().find(2);
+   // edm::ESHandle<EcalIntercalibConstantsMC> ical;
+   // iSetup.get<EcalIntercalibConstantsMCRcd>().get(ical);
+   // const EcalIntercalibConstantsMC* ical_map = ical.product();
+   // EcalIntercalibConstantsMC::const_iterator itical = ical_map->getMap().find(2);
+   // cout << "intercalib: " << (*itical) << endl;
 
-   cout << "mean dei piedistalli: " << (*itped).mean(0) << endl;
-   // edm::ESHandle<EcalIntercalibConstantsMC> peds;
-   // iSetup.get<EcalIntercalibConstantsMCRcd>().get(peds);
-   
    const int MAXSAMPLES=16;//10; 
 
    std::vector<double> ebAnalogSignal ;
@@ -187,17 +184,17 @@ PhaseIIAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
    ebADCGains.reserve(EBDataFrame::MAXSAMPLES);
 
    //Take Pedestals:
-   edm::ESHandle<EcalLiteDTUPedestals> peds;
-   iSetup.get<EcalLiteDTUPedestalsRcd>().get(peds);
-   const EcalLiteDTUPedestals* myped = peds.product();
-    int cnt=0;
-  for( EcalLiteDTUPedestals::const_iterator it = myped->barrelItems().begin(); it != myped->barrelItems().end(); ++it)
-    {
-      std::cout << "EcalPedestal: " << " BARREL " << cnt << " "
-                << "  mean:  " <<(*it).mean(0) << " rms: " << (*it).rms(0);                
-      std::cout << std::endl;
-            ++cnt;
-    }
+  //  edm::ESHandle<EcalLiteDTUPedestals> peds;
+  //  iSetup.get<EcalLiteDTUPedestalsRcd>().get(peds);
+  //  const EcalLiteDTUPedestals* myped = peds.product();
+  //   int cnt=0;
+  // for( EcalLiteDTUPedestals::const_iterator it = myped->barrelItems().begin(); it != myped->barrelItems().end(); ++it)
+  //   {
+  //     std::cout << "EcalPedestal: " << " BARREL " << cnt << " "
+  //               << "  mean:  " <<(*it).mean(0) << " rms: " << (*it).rms(0);                
+  //     std::cout << std::endl;
+  //           ++cnt;
+  //   }
   
    int nDigis=0;
 
@@ -205,11 +202,18 @@ PhaseIIAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
     {
        EBDataFrame digi( *pDigi );
        int nrSamples = digi.size();
-       cout<<"NSamples found: "<<nrSamples<<endl;
+       //cout<<"NSamples found: "<<nrSamples<<endl;
        EBDetId ebid = digi.id () ;
        //cout<<" Crystall ID "<<ebid<<endl;
        nDigis++;//cout<<" nDigis aaaaaaa "<<nDigis<<endl;
        if (meEBDigiOccupancy_) meEBDigiOccupancy_->Fill( ebid.iphi(), ebid.ieta() ); 
+
+       edm::ESHandle<EcalLiteDTUPedestals> peds;
+       iSetup.get<EcalLiteDTUPedestalsRcd>().get(peds);
+       const EcalLiteDTUPedestalsMap* DTUpeds_map = peds.product();
+       EcalLiteDTUPedestalsMap::const_iterator itped = DTUpeds_map->getMap().find(ebid);
+       
+       cout << "mean dei piedistalli: " << (*itped).mean(0) << "   rms: " << (*itped).rms(0) << endl;
 
        double Emax = 0. ;
        int Pmax = 0 ;

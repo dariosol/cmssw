@@ -19,9 +19,15 @@ process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
 #input:
 process.source = cms.Source("PoolSource",
 
-                            fileNames = cms.untracked.vstring('file:/afs/cern.ch/user/d/dsoldi/work/CMS/newCMSEcalComplete/CMSSW_10_3_1/src/SimCalorimetry/SingleElectronPt10_pythia8_cfi_py_GEN_SIM_DIGI_Pt10.root'),
+                            fileNames = cms.untracked.vstring('file:/afs/cern.ch/user/r/rselvati/work/private/ECALSim/CMSSW_10_3_1/src/SimCalorimetry/EcalSimProducers/test/SingleElectronPt10_pythia8_cfi_py_GEN_SIM_DIGI_Pt10.root'),
 
                             )
+
+process.load('SimCalorimetry.EcalSimProducers.esEcalLiteDTUPedestalsProducer_cfi')
+process.EcalLiteDTUPedestalsESProducer = cms.ESProducer(
+	"EcalLiteDTUPedestalsESProducer",
+	ComponentName = cms.string('testPedestalProducer')
+)
 
 process.phaseII = cms.EDAnalyzer('PhaseIIAnalyzer')
 process.TFileService = cms.Service("TFileService",

@@ -119,6 +119,8 @@ EcalCoder::encode( const EcalSamples& ecalSamples ,
       //I insert an absolute value in the trueRMS
       trueRMS[igain] = std::sqrt( std::fabs(widths[igain]*widths[igain] - 1./12.) ) ;
 
+      //std::cout << "piedistalli: " << pedestals[igain] << "    subdetId: " << detId.subdetId() << std::endl; //EcalBarrel = 1, EcalEndcap = 2
+
       // set nominal value first
       //findGains( detId , gains  );               
 

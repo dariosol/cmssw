@@ -13,8 +13,8 @@ const int gainId10=0;
 class EcalLiteDTUPed  {
 
  public:
-  double meanarray[2]={15.,15.};
-  double rmsarray[2]={2.5,2.5};
+  double meanarray[2]={13.,8.};
+  double rmsarray[2]={2.8,1.2};
  
   int setMean(int i, float value){
     if(i>=NGAINS || i<0) return -1;

@@ -30,7 +30,7 @@
 #include "CondFormats/EcalObjects/interface/EcalTPGPedestals.h"
 #include "CondFormats/DataRecord/interface/EcalTPGPedestalsRcd.h"
 
-
+#include "CondFormats/EcalObjects/interface/EcalConstants.h"
 
 #include <TTree.h>
 #include <TMath.h>
@@ -40,7 +40,7 @@
 
 const unsigned int EcalEBTrigPrimTestAlgo::nrSamples_=5;
 const unsigned int EcalEBTrigPrimTestAlgo::maxNrTowers_=2448;
-const unsigned int EcalEBTrigPrimTestAlgo::maxNrSamplesOut_=10;
+const unsigned int EcalEBTrigPrimTestAlgo::maxNrSamplesOut_= ecalPh2::sampleSize;
 
 
 EcalEBTrigPrimTestAlgo::EcalEBTrigPrimTestAlgo(const edm::EventSetup & setup,int nSam, int binofmax,bool tcpFormat, bool barrelOnly,bool debug, bool famos): 
@@ -48,7 +48,7 @@ EcalEBTrigPrimTestAlgo::EcalEBTrigPrimTestAlgo(const edm::EventSetup & setup,int
 
 {
 
- maxNrSamples_=10;
+maxNrSamples_= ecalPh2::sampleSize;
  this->init(setup);
 }
 

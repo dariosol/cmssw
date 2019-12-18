@@ -48,8 +48,8 @@ EcalLiteDTUPedestalsESProducer::produce(const EcalLiteDTUPedestalsRcd& iRecord){
     ped.setMean(0,15.);
     ped.setRMS(0,2.5);
     
-    ped.setMean(1,15.);
-    ped.setRMS(1,2.5);
+    ped.setMean(1,12.);
+    ped.setRMS(1,2.);
     
     prod->insert(std::make_pair(myEBDetId,ped));
   }
@@ -57,14 +57,14 @@ EcalLiteDTUPedestalsESProducer::produce(const EcalLiteDTUPedestalsRcd& iRecord){
   //std::cout<<"**********Set EE Values "<<std::endl;
 
   for (int iChannel = 0; iChannel < kEEChannels; iChannel++) {
-    EBDetId myEBDetId = EBDetId::unhashIndex(iChannel);
+    EEDetId myEEDetId = EEDetId::unhashIndex(iChannel);
     EcalLiteDTUPed ped;
     ped.setMean(0,15.);
     ped.setRMS(0,2.5);
     
-    ped.setMean(1,15.);
-    ped.setRMS(1,2.5);
-    prod->insert(std::make_pair(myEBDetId,ped));
+    ped.setMean(1,10.);
+    ped.setRMS(1,1.5);
+    prod->insert(std::make_pair(myEEDetId,ped));
   }
    
   
