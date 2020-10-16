@@ -232,7 +232,7 @@
   <field name="deltaEta_" mapping="blob" />
   <field name="deltaPhi_" mapping="blob" />
   <field name="ecalDccZs1stSample_" mapping="blob" />
-  <field name="dccNormalizedWeights_" mapping="blob" /> 
+  <field name="dccNormalizedWeights_" mapping="blob" />
   <field name="symetricZS_" mapping="blob" />
   <field name="srpLowInterestChannelZS_" mapping="blob" />
   <field name="srpHighInterestChannelZS_" mapping="blob" />
@@ -259,6 +259,16 @@
    <field name = "ee_" mapping = "blob"/>
 </class>
 
+<class name="EcalPhase2PulseShape"/>
+<!-- templates for EcalCondObjectContainer having the class as template parameter -->
+<class name="std::vector<EcalPhase2PulseShape>"/>
+<class name="EcalContainer<EEDetId,EcalPhase2PulseShape>"/>
+<class name="EcalContainer<EBDetId,EcalPhase2PulseShape>"/>
+<class name="EcalCondObjectContainer<EcalPhase2PulseShape>">
+   <field name = "eb_" mapping = "blob"/>
+   <field name = "ee_" mapping = "blob"/>
+</class>
+
 <!-- base class -->
 <class name="EcalPulseCovariance"/>
 <!-- templates for EcalCondObjectContainer having the class as template parameter -->
@@ -266,6 +276,16 @@
 <class name="EcalContainer<EEDetId,EcalPulseCovariance>"/>
 <class name="EcalContainer<EBDetId,EcalPulseCovariance>"/>
 <class name="EcalCondObjectContainer<EcalPulseCovariance>">
+   <field name = "eb_" mapping = "blob"/>
+   <field name = "ee_" mapping = "blob"/>
+</class>
+
+<class name="EcalPhase2PulseCovariance"/>
+<!-- templates for EcalCondObjectContainer having the class as template parameter -->
+<class name="std::vector<EcalPhase2PulseCovariance>"/>
+<class name="EcalContainer<EEDetId,EcalPhase2PulseCovariance>"/>
+<class name="EcalContainer<EBDetId,EcalPhase2PulseCovariance>"/>
+<class name="EcalCondObjectContainer<EcalPhase2PulseCovariance>">
    <field name = "eb_" mapping = "blob"/>
    <field name = "ee_" mapping = "blob"/>
 </class>
