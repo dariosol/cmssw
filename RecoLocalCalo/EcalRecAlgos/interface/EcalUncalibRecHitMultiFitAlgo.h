@@ -13,7 +13,9 @@
 #include "CondFormats/EcalObjects/interface/EcalPedestals.h"
 #include "CondFormats/EcalObjects/interface/EcalGainRatios.h"
 #include "RecoLocalCalo/EcalRecAlgos/interface/PulseChiSqSNNLS.h"
-
+#include "CondFormats/EcalObjects/interface/EcalLiteDTUPedestals.h"
+#include "CondFormats/EcalObjects/interface/EcalCATIAGainRatios.h"
+#include "DataFormats/EcalDigi/interface/EcalDataFrame_Ph2.h"
 #include "TMatrixDSym.h"
 #include "TVectorD.h"
 
@@ -28,6 +30,15 @@ public:
                                     const FullSampleVector &fullpulse,
                                     const FullSampleMatrix &fullpulsecov,
                                     const BXVector &activeBX);
+
+  EcalUncalibratedRecHit makePhase2RecHit(const EcalDataFrame_Ph2 &dataFrame,
+                                    const EcalLiteDTUPedestalsMap *aped,
+                                    const EcalCATIAGainRatio *aGain,
+                                    const SampleMatrixGainArray &noisecors,
+                                    const FullSampleVector &fullpulse,
+                                    const FullSampleMatrix &fullpulsecov,
+                                    const BXVector &activeBX);
+
   void disableErrorCalculation() { _computeErrors = false; }
   void setDoPrefit(bool b) { _doPrefit = b; }
   void setPrefitMaxChiSq(double x) { _prefitMaxChiSq = x; }

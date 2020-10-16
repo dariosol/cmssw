@@ -241,7 +241,7 @@ void EcalPhase2UncalibRecHitWorkerMultiFit::run(const edm::Event& evt,
   FullSampleMatrix fullpulsecov(FullSampleMatrix::Zero());
 
   result.reserve(result.size() + digis.size());
-  for (auto itdg = digis.begin(); itdg != digis.end(); ++itdg) {
+  for (EcalDataFrame_Ph2 itdg = digis.begin(); itdg != digis.end(); ++itdg) {
     DetId detid(itdg->id());
 
     const EcalSampleMask* sampleMask_ = sampleMaskHand_.product();
@@ -303,12 +303,12 @@ void EcalPhase2UncalibRecHitWorkerMultiFit::run(const edm::Event& evt,
       uncalibRecHit.setChi2(0);
     } else if (lastSampleBeforeSaturation >=
                -1) {  // saturation on other samples: cannot extrapolate from the fourth one
-      int gainId = ((EcalDataFrame)(*itdg)).sample(5).gainId();
+      int gainId = ((EcalDataFrame_Ph2)(*itdg)).sample(5).gainId();
       if (gainId == 0)
         gainId = 3;
       auto pedestal = pedVec[gainId - 1];
       auto gainratio = gainRatios[gainId - 1];
-      double amplitude = ((double)(((EcalDataFrame)(*itdg)).sample(5).adc()) - pedestal) * gainratio;
+      double amplitude = ((double)(((EcalDataFrame_Ph2)(*itdg)).sample(5).adc()) - pedestal) * gainratio;
       result.emplace_back((*itdg).id(), amplitude, 0, 0, 0);
       auto& uncalibRecHit = result.back();
       uncalibRecHit.setFlagBit(EcalUncalibratedRecHit::kSaturated);
@@ -318,7 +318,7 @@ void EcalPhase2UncalibRecHitWorkerMultiFit::run(const edm::Event& evt,
       // multifit
         const ecalph2::SampleMatrixGainArray& noisecors = noisecor();
 
-      result.push_back(multiFitMethod_.makeRecHit(*itdg, aped, aGain, noisecors, fullpulse, fullpulsecov, activeBX));
+      result.push_back(multiFitMethod_.makePhase2RecHit(*itdg, aped, aGain, noisecors, fullpulse, fullpulsecov, activeBX));
       auto& uncalibRecHit = result.back();
 
       // === time computation ===
