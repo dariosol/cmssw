@@ -42,7 +42,7 @@
 
 #include <memory>
 
-#include "SimCalorimetry/EcalEBTrigPrimAlgos/interface/EcalEBTrigPrimTestAlgo.h"
+#include "SimCalorimetry/EcalEBTrigPrimAlgos/interface/EcalEBTrigPrimPhase2Algo.h"
 
 EcalEBTrigPrimProducer::EcalEBTrigPrimProducer(const edm::ParameterSet& iConfig)
     : barrelOnly_(iConfig.getParameter<bool>("BarrelOnly")),
@@ -51,7 +51,7 @@ EcalEBTrigPrimProducer::EcalEBTrigPrimProducer(const edm::ParameterSet& iConfig)
       famos_(iConfig.getParameter<bool>("Famos")),
       nSamples_(iConfig.getParameter<int>("nOfSamples")),
       binOfMaximum_(iConfig.getParameter<int>("binOfMaximum")) {
-  tokenEBdigi_ = consumes<EBDigiCollection>(iConfig.getParameter<edm::InputTag>("barrelEcalDigis"));
+  tokenEBdigi_ = consumes<EBDigiCollectionPh2>(iConfig.getParameter<edm::InputTag>("barrelEcalDigis"));
   theEcalTPGLinearization_Token_ =
       esConsumes<EcalTPGLinearizationConst, EcalTPGLinearizationConstRcd, edm::Transition::BeginRun>();
   theEcalTPGPedestals_Token_ = esConsumes<EcalTPGPedestals, EcalTPGPedestalsRcd, edm::Transition::BeginRun>();
@@ -75,7 +75,7 @@ void EcalEBTrigPrimProducer::beginRun(edm::Run const& run, edm::EventSetup const
   //ProcessHistory is guaranteed to be constant for an entire Run
   //binOfMaximum_ = findBinOfMaximum(fillBinOfMaximumFromHistory_,binOfMaximum_,run.processHistory());
 
-  algo_ = std::make_unique<EcalEBTrigPrimTestAlgo>(
+  algo_ = std::make_unique<EcalEBTrigPrimPhase2Algo>(
       setup, nSamples_, binOfMaximum_, tcpFormat_, barrelOnly_, debug_, famos_);
   // get a first version of the records
   cacheID_ = this->getRecords(setup);
@@ -117,16 +117,7 @@ unsigned long long EcalEBTrigPrimProducer::getRecords(edm::EventSetup const& set
   const EcalTPGSpike* ecaltpgSpike = theEcalTPGSpike_handle.product();
 
   ////////////////
-  algo_->setPointers(ecaltpLin,
-                     ecaltpPed,
-                     ecaltpgBadX,
-                     ecaltpgWeightMap,
-                     ecaltpgWeightGroup,
-                     ecaltpgSlidW,
-                     ecaltpgLutGroup,
-                     ecaltpgLut,
-                     ecaltpgBadTT,
-                     ecaltpgSpike);
+  algo_->setPointers();
   return setup.get<EcalTPGLinearizationConstRcd>().cacheIdentifier();
 }
 
@@ -139,7 +130,7 @@ void EcalEBTrigPrimProducer::produce(edm::Event& e, const edm::EventSetup& iSetu
   nEvent_++;
 
   // get input collections
-  edm::Handle<EBDigiCollection> barrelDigiHandle;
+  edm::Handle<EBDigiCollectionPh2> barrelDigiHandle;
 
   if (!e.getByToken(tokenEBdigi_, barrelDigiHandle)) {
     edm::EDConsumerBase::Labels labels;
@@ -162,9 +153,9 @@ void EcalEBTrigPrimProducer::produce(edm::Event& e, const edm::EventSetup& iSetu
 
   // invoke algorithm
 
-  const EBDigiCollection* ebdigi = nullptr;
+  const EBDigiCollectionPh2* ebdigi = nullptr;
   ebdigi = barrelDigiHandle.product();
-  algo_->run(iSetup, ebdigi, *pOut, *pOutTcp);
+  algo_->run(iSetup, ebdigi, *pOut);
 
   if (debug_)
     std::cout << "produce"
@@ -194,6 +185,5 @@ void EcalEBTrigPrimProducer::produce(edm::Event& e, const edm::EventSetup& iSetu
 
   // put result into the Event
   e.put(std::move(pOut));
-  if (tcpFormat_)
-    e.put(std::move(pOutTcp), "formatTCP");
+
 }

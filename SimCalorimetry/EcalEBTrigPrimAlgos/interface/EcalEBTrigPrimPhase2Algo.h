@@ -1,6 +1,6 @@
-#ifndef EcalEBTrigPrimTestAlgo_h
-#define EcalEBTrigPrimTestAlgo_h
-/** \class EcalEBTrigPrimTestAlgo
+#ifndef EcalEBTrigPrimPhase2Algo_h
+#define EcalEBTrigPrimPhase2Algo_h
+/** \class EcalEBTrigPrimPhase2Algo
 \author N. Marinelli - Univ. of Notre Dame
  * forPhase II 
  * While the new digitization is not yet implemented, we use the old Digis to make TP per crystal
@@ -14,7 +14,6 @@
 #include "Geometry/CaloTopology/interface/EcalTrigTowerConstituentsMap.h"
 #include "DataFormats/EcalDetId/interface/EcalTriggerElectronicsId.h"
 #include "DataFormats/Common/interface/SortedCollection.h"
-//#include "DataFormats/EcalRecHit/interface/EcalRecHitCollections.h"
 #include "DataFormats/EcalDigi/interface/EcalDigiCollections.h"
 
 
@@ -25,13 +24,10 @@
 #include "Geometry/Records/interface/CaloGeometryRecord.h"
 #include "Geometry/CaloGeometry/interface/CaloSubdetectorGeometry.h"
 #include "Geometry/CaloGeometry/interface/CaloCellGeometry.h"
+#include "DataFormats/EcalDigi/interface/EBDataFrame_Ph2.h"
 
+#include "SimCalorimetry/EcalEBTrigPrimAlgos/interface/EcalPhase2Linearizer.h"
 
-#include <SimCalorimetry/EcalEBTrigPrimAlgos/interface/EcalPhase2Linearizer.h>
-#include <SimCalorimetry/EcalEBTrigPrimAlgos/interface/EcalFenixAmplitudeFilter.h>
-#include <SimCalorimetry/EcalEBTrigPrimAlgos/interface/EcalFenixPeakFinder.h>
-#include <SimCalorimetry/EcalEBTrigPrimAlgos/interface/EcalFenixStripFormatEB.h> 
-#include <SimCalorimetry/EcalEBTrigPrimAlgos/interface/EcalFenixTcpFormat.h>
 
 #include <map>
 #include <utility>
@@ -41,22 +37,21 @@ class EcalTrigTowerDetId;
 class ETPCoherenceTest;
 class EcalEBTriggerPrimitiveSample;
 class CaloSubdetectorGeometry;
-class EBDataFrame;
+class EBDataFrame_Ph2;
 
 
  
-class EcalEBTrigPrimTestAlgo
+class EcalEBTrigPrimPhase2Algo
 {  
  public:
   
-  explicit EcalEBTrigPrimTestAlgo(const edm::EventSetup & setup, int nSamples, int binofmax, bool tcpFormat, bool barrelOnly, bool debug, bool famos);
+  explicit EcalEBTrigPrimPhase2Algo(const edm::EventSetup & setup, int nSamples, int binofmax, bool tcpFormat, bool barrelOnly, bool debug, bool famos);
 
-  virtual ~EcalEBTrigPrimTestAlgo();
+  virtual ~EcalEBTrigPrimPhase2Algo();
 
-  
-  //  void run(const edm::EventSetup &, const EcalRecHitCollection *col, EcalEBTrigPrimDigiCollection & result, EcalEBTrigPrimDigiCollection & resultTcp);
-  void run(const edm::EventSetup &, const EBDigiCollectionPh2 *col, EcalEBTrigPrimDigiCollection & result, EcalEBTrigPrimDigiCollection & resultTcp);
-  
+  void run(const edm::EventSetup &, const EBDigiCollectionPh2 *col, EcalEBTrigPrimDigiCollection & result);
+
+  /*  
   void setPointers(const EcalTPGLinearizationConst *ecaltpLin,
 		   const EcalTPGPedestals *ecaltpPed,
 		   const EcalTPGCrystalStatus * ecaltpgBadX,
@@ -79,7 +74,9 @@ class EcalEBTrigPrimTestAlgo
     ecaltpgBadTT_=ecaltpgBadTT;
     ecaltpgSpike_= ecaltpgSpike;
   }
+  */
 
+  void setPointers() {;}
 
  private:
 
@@ -88,9 +85,15 @@ class EcalEBTrigPrimTestAlgo
     void initStructures(std::vector<std::vector<std::pair<int,std::vector<T> > > > & towMap);
   template <class T> 
     void clean(std::vector<std::vector<std::pair<int,std::vector<T> > > > &towerMap);
-  template <class Coll> 
-    void fillMap(Coll const * col, std::vector<std::vector<std::pair<int,std::vector<typename Coll::Digi> > > > &towerMap);
+
+
+  void fillMap(EBDigiCollectionPh2 const * col, std::vector<std::vector<std::pair<int,std::vector<EBDigiCollectionPh2::Digi> > >  > &towerMap);
+  //  void fillMap(EBDigiCollectionPh2 const * col, std::vector<std::vector<std::pair<int,std::vector<EBDataFrame_Ph2> > >  > &towerMap);
+ 
+
+
   int findStripNr(const EBDetId &id);
+  
   int findStripNr(const EEDetId &id);
 
   // FIXME: temporary until hashedIndex works alsom for endcap
@@ -126,7 +129,8 @@ class EcalEBTrigPrimTestAlgo
 
   // data structures kept during the whole run
   std::vector<std::vector<int> > striptp_;
-  std::vector<std::vector<std::pair<int,std::vector<EBDataFrame_Ph2> > > > towerMapEB_;
+  //std::vector<std::vector<std::pair<int,std::vector<EBDataFrame> > > > towerMapEB_;
+  std::vector<std::vector<std::pair<int,std::vector<EBDataFrame_Ph2> > > > towerMapEB_; 
   std::vector<std::vector<std::pair<int,std::vector<EEDataFrame> > > > towerMapEE_;
   std::vector<std::pair<int,EcalTrigTowerDetId> > hitTowers_;
   std::vector<EcalEBTriggerPrimitiveSample> towtp_;
@@ -139,12 +143,12 @@ class EcalEBTrigPrimTestAlgo
 
 
   std::vector <EcalPhase2Linearizer *> linearizer_;
-  EcalFenixAmplitudeFilter *amplitude_filter_; 
-  EcalFenixPeakFinder *peak_finder_; 
-  EcalFenixStripFormatEB *fenixFormatterEB_;
-  EcalFenixTcpFormat *fenixTcpFormat_;
+  //  EcalPhase2AmplitudeReconstruction *amplitude_reconstructor_; 
+  //EcalPhase2TimeReconstruction *time_reconstructor_;
+  //EcalPhase2SpikeFinder *spike_finder_;
   
   //
+  /*
   const EcalTPGPedestals * ecaltpPed_;
   const EcalTPGLinearizationConst *ecaltpLin_;
   const EcalTPGCrystalStatus *ecaltpgBadX_;
@@ -155,12 +159,12 @@ class EcalEBTrigPrimTestAlgo
   const EcalTPGLutIdMap *ecaltpgLut_;
   const EcalTPGTowerStatus *ecaltpgBadTT_;
   const EcalTPGSpike * ecaltpgSpike_;   
-    
+  */
 
   EcalPhase2Linearizer *getLinearizer (int i) const { return linearizer_[i];}
   std::vector<std::vector<int> > lin_out_;
   //
-  EcalFenixAmplitudeFilter *getFilter() const { return amplitude_filter_;}
+  //EcalPhase2AmplitudeReconstruction *getAmplitudeFinder() const { return amplitude_reconstructor_;}
   std::vector<int> filt_out_;
   std::vector<int> peak_out_;
   std::vector<int> format_out_;
@@ -168,11 +172,12 @@ class EcalEBTrigPrimTestAlgo
   std::vector<int> fgvb_out_;
   std::vector<int> fgvb_out_temp_;
 
+  //EcalPhase2TimeReconstruction *getTimeFinder() const {return time_reconstructor_};
+  //EcalPhase2SpikeFinder *getSpikeFinder() const {return spike_finder};
+  
+
   //
-  EcalFenixPeakFinder *getPeakFinder() const { return peak_finder_;}
-  EcalFenixStripFormatEB *getFormatterEB() const { return fenixFormatterEB_;}
-  //
-  EcalFenixTcpFormat *getFormatter() const {return fenixTcpFormat_;}
+
   std::vector<int> tcpformat_out_;
 
 
@@ -181,7 +186,7 @@ class EcalEBTrigPrimTestAlgo
 
 
 template <class T> 
-void EcalEBTrigPrimTestAlgo::clean( std::vector<std::vector<std::pair<int,std::vector<T> > > > & towMap) {  
+void EcalEBTrigPrimPhase2Algo::clean( std::vector<std::vector<std::pair<int,std::vector<T> > > > & towMap) {  
   // clean internal data structures
   for (unsigned int i=0;i<maxNrTowers_;++i) 
     for (int j=0;j<nbMaxStrips_ ;++j) (towMap[i])[j].first=0;
@@ -189,21 +194,26 @@ void EcalEBTrigPrimTestAlgo::clean( std::vector<std::vector<std::pair<int,std::v
 }
 
 
-template <class Coll> 
-void EcalEBTrigPrimTestAlgo::fillMap(Coll const * col, 
-					 std::vector<std::vector<std::pair<int,std::vector<typename Coll::Digi> > > > &towerMap)
+
+void EcalEBTrigPrimPhase2Algo::fillMap(EBDigiCollectionPh2 const * col, std::vector<std::vector<std::pair<int,std::vector<EBDigiCollectionPh2::Digi> >  > >  &towerMap)
+//void EcalEBTrigPrimPhase2Algo::fillMap(EBDigiCollectionPh2 const * col, std::vector<std::vector<std::pair<int,std::vector<EBDataFrame_Ph2> >  > >  &towerMap)
+
+
+
 {
-  typedef typename Coll::Digi Digi;
+  // typedef typename Coll::Digi Digi;
 
   // implementation for Barrel 
   if (col) {
     nrTowers_=0;
     if ( debug_) std::cout  <<"Fill mapping, Collection size = "<< col->size() << std::endl;;
     for(unsigned int i = 0; i < col->size() ; ++i) {
-      Digi samples((*col)[i]); 
+      EBDigiCollectionPh2::Digi samples((*col)[i]);
+      //EcalDataFrame_Ph2  samples((*col)[i]); 
       EcalTrigTowerDetId coarser=(*eTTmap_).towerOf(samples.id());
       int index=getIndex(col,coarser);
-      int stripnr=findStripNr(samples.id());
+      EBDetId id=samples.id();
+      int stripnr=findStripNr(id);
 
       int filled=0;
       for (unsigned int ij=0;ij<towerMap[index].size();++ij) filled+=towerMap[index][ij].first;
@@ -230,7 +240,7 @@ void EcalEBTrigPrimTestAlgo::fillMap(Coll const * col,
 }
 
 template <class T> 
-void EcalEBTrigPrimTestAlgo::initStructures( std::vector<std::vector<std::pair<int,std::vector<T> > > > & towMap) {  
+void EcalEBTrigPrimPhase2Algo::initStructures( std::vector<std::vector<std::pair<int,std::vector<T> > > > & towMap) {  
   //initialise internal data structures
 
   std::vector <T> vec0(nbMaxXtals_ );

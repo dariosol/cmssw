@@ -22,9 +22,6 @@ public:
   EcalLiteDTUSample operator[](int i) const { return m_data[i]; }
   EcalLiteDTUSample sample(int i) const { return m_data[i]; }
 
-  typedef EBDetId key_type;  /// For the sorted collection
-  typedef EcalDataFrame_Ph2 Base;
-
   void setSize(int) {}
   void setSample(int i, EcalLiteDTUSample sam) { m_data[i] = sam; }
 

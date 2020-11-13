@@ -40,7 +40,7 @@
 #include "CondFormats/EcalObjects/interface/EcalTPGWeightGroup.h"
 #include "CondFormats/EcalObjects/interface/EcalTPGTowerStatus.h"
 
-class EcalEBTrigPrimTestAlgo;
+class EcalEBTrigPrimPhase2Algo;
 
 class EcalEBTrigPrimProducer : public edm::stream::EDProducer<> {
 public:
@@ -53,7 +53,7 @@ public:
   void produce(edm::Event& e, const edm::EventSetup& c) override;
 
 private:
-  std::unique_ptr<EcalEBTrigPrimTestAlgo> algo_;
+  std::unique_ptr<EcalEBTrigPrimPhase2Algo> algo_;
   bool barrelOnly_;
   bool tcpFormat_;
   bool debug_;
@@ -61,7 +61,7 @@ private:
   int nSamples_;
   int nEvent_;
 
-  edm::EDGetTokenT<EBDigiCollection> tokenEBdigi_;
+  edm::EDGetTokenT<EBDigiCollectionPh2> tokenEBdigi_;
   edm::ESGetToken<EcalTPGLinearizationConst, EcalTPGLinearizationConstRcd> theEcalTPGLinearization_Token_;
   edm::ESGetToken<EcalTPGPedestals, EcalTPGPedestalsRcd> theEcalTPGPedestals_Token_;
   edm::ESGetToken<EcalTPGCrystalStatus, EcalTPGCrystalStatusRcd> theEcalTPGCrystalStatus_Token_;

@@ -1,6 +1,6 @@
-/** \class EcalEBTrigPrimTestAlgo
+/** \class EcalEBTrigPrimPhase2Algo
  *
- * EcalEBTrigPrimTestAlgo 
+ * EcalEBTrigPrimPhase2Algo 
  * starting point for Phase II: build TPs out of Phase I digis to start building the
  * infrastructures
  *
@@ -18,11 +18,10 @@
 #include "Geometry/EcalMapping/interface/EcalElectronicsMapping.h"
 #include "Geometry/EcalMapping/interface/EcalMappingRcd.h"
 
-#include "SimCalorimetry/EcalEBTrigPrimAlgos/interface/EcalEBTrigPrimTestAlgo.h"
+#include "SimCalorimetry/EcalEBTrigPrimAlgos/interface/EcalEBTrigPrimPhase2Algo.h"
 
 #include "DataFormats/EcalDetId/interface/EcalSubdetector.h"
 #include "DataFormats/EcalDigi/interface/EBDataFrame_Ph2.h"
-//#include "DataFormats/EcalDigi/interface/EBDataFrame.h"
 #include "DataFormats/EcalDigi/interface/EEDataFrame.h"
 #include "DataFormats/EcalDetId/interface/EcalTrigTowerDetId.h"
 #include "DataFormats/EcalDetId/interface/EBDetId.h"
@@ -39,12 +38,12 @@
 
 //----------------------------------------------------------------------
 
-const unsigned int EcalEBTrigPrimTestAlgo::nrSamples_=5;
-const unsigned int EcalEBTrigPrimTestAlgo::maxNrTowers_=2448;
-const unsigned int EcalEBTrigPrimTestAlgo::maxNrSamplesOut_= ecalPh2::sampleSize;
+const unsigned int EcalEBTrigPrimPhase2Algo::nrSamples_=5;
+const unsigned int EcalEBTrigPrimPhase2Algo::maxNrTowers_=2448;
+const unsigned int EcalEBTrigPrimPhase2Algo::maxNrSamplesOut_= ecalPh2::sampleSize;
 
 
-EcalEBTrigPrimTestAlgo::EcalEBTrigPrimTestAlgo(const edm::EventSetup & setup,int nSam, int binofmax,bool tcpFormat, bool barrelOnly,bool debug, bool famos): 
+EcalEBTrigPrimPhase2Algo::EcalEBTrigPrimPhase2Algo(const edm::EventSetup & setup,int nSam, int binofmax,bool tcpFormat, bool barrelOnly,bool debug, bool famos): 
   nSamples_(nSam),binOfMaximum_(binofmax), tcpFormat_(tcpFormat), barrelOnly_(barrelOnly), debug_(debug), famos_(famos)
 
 {
@@ -54,7 +53,7 @@ maxNrSamples_= ecalPh2::sampleSize;
 }
 
 //----------------------------------------------------------------------
-void EcalEBTrigPrimTestAlgo::init(const edm::EventSetup & setup) {
+void EcalEBTrigPrimPhase2Algo::init(const edm::EventSetup & setup) {
   if (!barrelOnly_) {
     //edm::ESHandle<CaloGeometry> theGeometry;
     //    edm::ESHandle<CaloSubdetectorGeometry> theEndcapGeometry_handle;
@@ -76,43 +75,42 @@ void EcalEBTrigPrimTestAlgo::init(const edm::EventSetup & setup) {
   lin_out_.resize(nbMaxXtals_);  
   for (int i=0;i<5;i++) lin_out_[i]=v;
   //
-  amplitude_filter_ = new EcalFenixAmplitudeFilter();
+  //amplitude_reconstructor_ = new EcalPhase2AmplitudeReconstructor();
   filt_out_.resize(maxNrSamples_);
   peak_out_.resize(maxNrSamples_);
   // these two are dummy
   fgvb_out_.resize(maxNrSamples_);
   fgvb_out_temp_.resize(maxNrSamples_);  
   //
-  peak_finder_ = new  EcalFenixPeakFinder();
-  fenixFormatterEB_ = new EcalFenixStripFormatEB();
+
   format_out_.resize(maxNrSamples_);
   //
-  fenixTcpFormat_ = new EcalFenixTcpFormat(tcpFormat_, debug_, famos_, binOfMaximum_);
-  tcpformat_out_.resize(maxNrSamples_);   
+
+  //time_reconstructor_ = new EcalPhase2TimeReconstruction();
+  //spike_finder_ = new EcalPhase2SpikeFinder();
+
 
 }
 //----------------------------------------------------------------------
 
-EcalEBTrigPrimTestAlgo::~EcalEBTrigPrimTestAlgo() 
+EcalEBTrigPrimPhase2Algo::~EcalEBTrigPrimPhase2Algo() 
 {
   for (int i=0;i<nbMaxXtals_;i++) delete linearizer_[i]; 
-  delete amplitude_filter_;
-  delete peak_finder_;
-  delete fenixFormatterEB_;
-  delete fenixTcpFormat_;
+  //delete amplitude_reconstructor_;
+  //delete time_reconstructor_ ;
+  //delete spike_finder_;
 }
 
 
-void EcalEBTrigPrimTestAlgo::run(const edm::EventSetup & setup, 
-				 EBDigiCollectionPh2 const * digi,
-				 EcalEBTrigPrimDigiCollection & result,
-				 EcalEBTrigPrimDigiCollection & resultTcp)
+void EcalEBTrigPrimPhase2Algo::run(const edm::EventSetup & setup, 
+				   EBDigiCollectionPh2 const * digi,
+				   EcalEBTrigPrimDigiCollection & result)
 {
 
   //typedef typename Coll::Digi Digi;
   if (debug_) {
-    std::cout << "  EcalEBTrigPrimTestAlgo: Testing that the algorythm with digis is well plugged " << std::endl;
-    std::cout << "  EcalEBTrigPrimTestAlgo: digi size " << digi->size() << std::endl;
+    std::cout << "  EcalEBTrigPrimPhase2Algo: Testing that the algorythm with digis is well plugged " << std::endl;
+    std::cout << "  EcalEBTrigPrimPhase2Algo: digi size " << digi->size() << std::endl;
   }
 
   uint16_t etInADC;
@@ -138,6 +136,7 @@ void EcalEBTrigPrimTestAlgo::run(const edm::EventSetup & setup,
     for(unsigned int iStrip = 0; iStrip < towerMapEB_[itow].size();++iStrip)
       {
 	if (debug_) std::cout << " Data for STRIP num " << iStrip << std::endl;    
+	//std::vector<EBDataFrame> &dataFrames = (towerMapEB_[index])[iStrip].second;//vector of dataframes for this strip, size; nr of crystals/strip
 	std::vector<EBDataFrame_Ph2> &dataFrames = (towerMapEB_[index])[iStrip].second;//vector of dataframes for this strip, size; nr of crystals/strip
 
 	nxstals = (towerMapEB_[index])[iStrip].first;
@@ -151,20 +150,23 @@ void EcalEBTrigPrimTestAlgo::run(const edm::EventSetup & setup,
 	// loop over the xstals in a strip
 	for (int iXstal=0;iXstal<nxstals;iXstal++) {
 	  const EBDetId & myid = dataFrames[iXstal].id();
+	  
 	  tp=  EcalEBTriggerPrimitiveDigi(  myid );   
 	  tp.setSize( nrSamples_);
 
 
 	  if(debug_){
 	    std::cout<<std::endl;
-	    std::cout <<"iXstal= "<<iXstal<< " id " <<  dataFrames[iXstal].id()  << " EBDataFrame is: "<<std::endl; 
+            EBDetId id= dataFrames[iXstal].id();
+	    
+	    std::cout <<"iXstal= "<< iXstal << " id " <<  id   << " EBDataFrame_Ph2 is: "<<std::endl; 
 	    for ( int i = 0; i<dataFrames[iXstal].size();i++){
 	      std::cout <<" "<<std::dec<<dataFrames[iXstal][i].adc();
 	    }
 	    std::cout<<std::endl;
 	  }
 	  //   Call the linearizer
-	  this->getLinearizer(iXstal)->setParameters( dataFrames[iXstal].id().rawId(),ecaltpPed_,ecaltpLin_,ecaltpgBadX_) ; 
+	  this->getLinearizer(iXstal)->setParameters( dataFrames[iXstal].id().rawId() ); 
 	  this->getLinearizer(iXstal)->process( dataFrames[iXstal],lin_out_[iXstal]);
 
 	  for (unsigned int i =0; i<lin_out_[iXstal].size();i++){
@@ -182,68 +184,35 @@ void EcalEBTrigPrimTestAlgo::run(const edm::EventSetup & setup,
 	  }
 
 
+	  /*
 
-	  // Call the amplitude filter
-	  this->getFilter()->setParameters(stripid,ecaltpgWeightMap_,ecaltpgWeightGroup_);      
-	  this->getFilter()->process(lin_out_[iXstal],filt_out_,fgvb_out_temp_,fgvb_out_);   
+	  // Call the amplitude reconstructor
+	  this->getAmplitudeFinder()->setParameters(stripid,ecaltpgWeightMap_,ecaltpgWeightGroup_);      
+	  this->getAmplitudeFinder()->process(lin_out_[iXstal],filt_out_,fgvb_out_temp_,fgvb_out_);   
 
 	  if(debug_){
-	    std::cout<< "output of filter is a vector of size: "<<std::dec<<filt_out_.size()<<std::endl; 
+	    std::cout<< "output of amplitude finder is a vector of size: "<<std::dec<<filt_out_.size()<<std::endl; 
 	    for (unsigned int ix=0;ix<filt_out_.size();ix++){
 	      std::cout<<std::dec<<filt_out_[ix] << " " ;
 	    }
 	    std::cout<<std::endl;
 	  }
 
-	  // call peakfinder
-	  this->getPeakFinder()->process(filt_out_,peak_out_);
+	  // call time finder
+	  this->getTimeFinder()->process(filt_out_,peak_out_);
  
 	  if(debug_){
-	    std::cout<< "output of peakfinder is a vector of size: "<<std::dec<<peak_out_.size()<<std::endl; 
+	    std::cout<< "output of timefinder is a vector of size: "<<std::dec<<peak_out_.size()<<std::endl; 
 	    for (unsigned int ix=0;ix<peak_out_.size();ix++){
 	      std::cout<<std::dec<<peak_out_[ix] << " " ;
 	    }
 	    std::cout<<std::endl;
 	  }
 
-	  // call formatter
-	  this->getFormatterEB()->setParameters(stripid,ecaltpgSlidW_) ; 
-	  this->getFormatterEB()->process(fgvb_out_,peak_out_,filt_out_,format_out_); 
+	  // call spike finder
+          this->getSpikeFinder();	  
 
-	  if (debug_) {
-	    std::cout<< "output of formatter is a vector of size: "<<format_out_.size()<<std::endl; 
-	    for (unsigned int i =0; i<format_out_.size();i++){
-	      std::cout <<" "<<std::dec<<format_out_[i] << " " ;
-	    }    
-	    std::cout<<std::endl;
-	  }
-	  
-
-	  // call final tcp formatter
-	  this->getFormatter()->setParameters( thisTower.rawId(),ecaltpgLutGroup_,ecaltpgLut_,ecaltpgBadTT_,ecaltpgSpike_);
-	  this->getFormatter()->process(format_out_,tcpformat_out_);
-	  // loop over the time samples and fill the TP
-	  int nSam=0;
-	  for (int iSample=firstSample;iSample<=lastSample;++iSample) {
-	    etInADC= tcpformat_out_[iSample];
-	    if (debug_) std::cout << " format_out " << tcpformat_out_[iSample] <<  " etInADC " << etInADC << std::endl;
-
-	    bool isASpike=false; // no spikes for now 
-            int timing=0;   //  set to 0  value for now
-	    tp.setSample(nSam,  EcalEBTriggerPrimitiveSample(etInADC,isASpike,timing)  );
-
-	    nSam++;
-	    if (debug_) std::cout << "in TestAlgo" <<" tp size "<<tp.size() << std::endl;
-	  }
-
-
-
-	  if (!tcpFormat_)
-	    result.push_back(tp);
-	  else 
-	    resultTcp.push_back(tp);
-	  
-
+	  */
 
 	} // Loop over the xStals
 
@@ -262,7 +231,7 @@ void EcalEBTrigPrimTestAlgo::run(const edm::EventSetup & setup,
 
   /*
   for (unsigned int i=0;i<digi->size();i++) {
-    EBDataFrame myFrame((*digi)[i]);  
+    EcalDataFrame_Ph2 myFrame((*digi)[i]);  
     const EBDetId & myid1 = myFrame.id();
     tp=  EcalTriggerPrimitiveDigi(  myid1);   
     tp.setSize( myFrame.size());
@@ -296,7 +265,7 @@ void EcalEBTrigPrimTestAlgo::run(const edm::EventSetup & setup,
       EcalEBTriggerPrimitiveSample mysam(etInADC);
       tp.setSample(nSam, mysam );
       nSam++;
-      if (debug_) std::cout << "in TestAlgo" <<" tp size "<<tp.size() << std::endl;
+      if (debug_) std::cout << "in Phase2Algo" <<" tp size "<<tp.size() << std::endl;
     }
 
     if (!tcpFormat_)
@@ -321,7 +290,8 @@ void EcalEBTrigPrimTestAlgo::run(const edm::EventSetup & setup,
 
 //----------------------------------------------------------------------
 
-int  EcalEBTrigPrimTestAlgo::findStripNr(const EBDetId &id){
+int  EcalEBTrigPrimPhase2Algo::findStripNr(const EBDetId &id){
+
   int stripnr;
   int n=((id.ic()-1)%100)/20; //20 corresponds to 4 * ecal_barrel_crystals_per_strip FIXME!!
   if (id.ieta()<0) stripnr = n+1;

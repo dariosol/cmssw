@@ -11,7 +11,7 @@ process.load("CalibCalorimetry.EcalTPGTools.ecalTPGScale_cff")
 
 process.source = cms.Source("PoolSource",
 
-fileNames = cms.untracked.vstring('file:EBTP_PhaseII_TESTDF_uncompEt_spikeflag.root')
+fileNames = cms.untracked.vstring('file:/afs/cern.ch/work/n/nancy/private/EcalL1/workTPHPhaseII/workWithNewDigis/Oct21/CMSSW_11_2_0_pre7/src/step1_UpToDigi.root')
 )
 
 process.maxEvents = cms.untracked.PSet(
@@ -23,7 +23,7 @@ from SimCalorimetry.EcalTrigPrimProducers.ecalTrigPrimESProducer_cff import *
 process.tpAnalyzer = cms.EDAnalyzer("EcalEBTrigPrimAnalyzer",
                                     inputRecHitsEB = cms.InputTag("ecalRecHit","EcalRecHitsEB"),
                                     barrelEcalDigis = cms.InputTag("simEcalDigis","ebDigis"),
-                                    AnalyzeRecHits = cms.bool(True),
+                                    AnalyzeRecHits = cms.bool(False),
                                     Debug = cms.bool(False),
                                     inputTP = cms.InputTag("simEcalEBTriggerPrimitiveDigis")
     
